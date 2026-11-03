@@ -34,7 +34,7 @@
   --overlay:rgba(0,0,0,.65); --thumb:#0a0d0c; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{height:100%}
+html{height:100%}body{min-height:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-ui);font-size:14px;line-height:1.45}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
 button,select{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
