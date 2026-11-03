@@ -188,6 +188,10 @@ main{flex:1;min-width:0;padding-left:max(16px,env(safe-area-inset-left,0px));pad
 @media (max-width:560px){.rcard{grid-template-columns:minmax(0,1fr)}.wtitle{font-size:19px}.watch{padding-top:0}.player{border-radius:0;margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)))}}
 
 
+.ytmount,.player iframe,.sstage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.sound{position:absolute;left:12px;top:12px;z-index:6;display:flex;align-items:center;gap:6px;height:36px;padding:0 14px 0 10px;border-radius:18px;background:rgba(0,0,0,.72);color:#fff;font-weight:600;font-size:14px}
+.sound svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sound:hover{background:var(--accent);color:var(--accent-ink)}
 /* ---------- shorts shelf (home) ---------- */
 .shelf{margin:0 0 36px}
 .shelf-h{display:flex;align-items:center;gap:8px;margin:4px 0 14px}
@@ -417,7 +421,7 @@ function watch(i){
   if(v.b)yc.push(`<div class="ycr"><span class="lvl">THPT · ${esc(v.bm)} lớp ${esc(v.bl)}</span><span class="code">${esc(v.b)}</span><span class="tp">${esc(v.bt)}</span><p>${esc(v.by.replace(/^[–-]\s*/,''))}</p></div>`);
   const rel=related(v).map(([x,why])=>`<article class="rcard"><a class="thumb" href="#v-${x._i}" style="${bg(x)}" aria-label="${esc(x.t)}">${img(x)}<span class="dur">${dur(x.d)}</span>${seen.has(x.id)?'<span class="seenbar"></span>':''}</a><div class="info"><a class="ti" href="#v-${x._i}">${esc(x.t)}</a><span class="ch">${esc(x.c)}</span><span class="st">${views(x.v)} lượt xem</span><span class="rwhy">${esc(why)}</span></div></article>`).join('');
   $('#watch').innerHTML=`<div style="min-width:0">
-    <div class="player"><iframe src="https://www.youtube-nocookie.com/embed/${v.id}?rel=0&modestbranding=1&playsinline=1" title="${esc(v.t)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    <div class="player" id="wplayer"></div>
     <h1 class="wtitle">${esc(v.t)}</h1>
     <p class="wvi">${esc(v.ht)}</p>
     <div class="owner"><div class="who">${av(v.c)}<div><b>${esc(v.c)}</b><small>${views(v.v)} lượt xem${v.p?' · '+v.p:''}</small></div></div>
@@ -429,7 +433,7 @@ function watch(i){
     </div>
   </div>
   <aside class="related" aria-label="Video liên quan"><h2>Cùng yêu cầu cần đạt</h2>${rel||'<p class="st">Chưa có video liên quan.</p>'}</aside>`;
-  $('#watch').hidden=false;window.scrollTo(0,0);seen.add(v.id);S.set('st-seen',[...seen]);counts();
+  $('#watch').hidden=false;window.scrollTo(0,0);mountPlayer($('#wplayer'),v,false);seen.add(v.id);S.set('st-seen',[...seen]);counts();
   $('#watch').onclick=e=>{
     if(e.target.closest('[data-watch]')){seen.add(v.id);S.set('st-seen',[...seen]);counts()}
     if(e.target.closest('#lat')){later.has(v.id)?later.delete(v.id):later.add(v.id);S.set('st-later',[...later]);$('#lat span').textContent=later.has(v.id)?'Đã lưu Xem sau':'Xem sau';counts()}
@@ -456,6 +460,35 @@ function shelf(show){
    ${pool.length>shelfN?`<div class="shelf-more"><button id="shMore">Hiện thêm</button></div>`:''}</section>`;
   const b=$('#shMore');if(b)b.onclick=()=>{shelfN+=12;shelf(true)};
 }
+
+/* YouTube IFrame API: try to start with sound; if the browser blocks it, start muted and offer "Bật tiếng" */
+let ytP=null,soundOn=S.get('st-sound',true);
+function ytApi(){if(ytP)return ytP;ytP=new Promise(res=>{if(window.YT&&YT.Player)return res();window.onYouTubeIframeAPIReady=()=>res();const t=document.createElement('script');t.src='https://www.youtube.com/iframe_api';document.head.appendChild(t)});return ytP}
+function unmountPlayer(el){if(!el)return;if(el._yt){try{el._yt.destroy()}catch(e){}el._yt=null}el.querySelectorAll('.ytmount,.sound').forEach(x=>x.parentNode.removeChild(x))}
+function soundBtn(el,pl){
+  if(el.querySelector('.sound'))return;
+  const b=document.createElement('button');b.className='sound';b.type='button';
+  b.innerHTML='<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4Z"/><path d="m17 9 4 6M21 9l-4 6"/></svg>Bật tiếng';
+  b.onclick=e=>{e.stopPropagation();pl.unMute();pl.setVolume(100);pl.playVideo();soundOn=true;S.set('st-sound',true);b.parentNode.removeChild(b)};
+  el.appendChild(b);
+}
+function mountPlayer(el,v,loop){
+  unmountPlayer(el);
+  const d=document.createElement('div');d.className='ytmount';el.prepend(d);
+  ytApi().then(()=>{
+    if(!d.isConnected)return;
+    const pv={autoplay:1,playsinline:1,rel:0,modestbranding:1};
+    if(loop){pv.loop=1;pv.playlist=v.id}
+    const pl=new YT.Player(d,{host:'https://www.youtube-nocookie.com',videoId:v.id,playerVars:pv,
+      events:{
+        onReady:e=>{const p=e.target;if(!soundOn){p.mute();soundBtn(el,p)}p.playVideo();
+          setTimeout(()=>{if(el._yt!==p)return;const s=p.getPlayerState();if(s!==1&&s!==3){p.mute();p.playVideo();soundBtn(el,p)}},1500)},
+        onStateChange:e=>{if(e.data===1&&!e.target.isMuted()){const b=el.querySelector('.sound');if(b)b.parentNode.removeChild(b)}}
+      }});
+    el._yt=pl;
+  });
+}
+
 const ytEmbed=id=>`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&playsinline=1&loop=1&playlist=${id}&rel=0&modestbranding=1`;
 function shortsOpen(startIdx){
   document.body.classList.add('shorting');document.body.classList.remove('watching');
@@ -503,17 +536,17 @@ function shPanelHTML(v){
 function shActivate(k){
   if(k===shCur||!shOrder[k])return;
   const items=$$('.sitem');
-  if(shCur>=0&&items[shCur]){const st0=items[shCur].querySelector('[data-stage]');const f=st0.querySelector('iframe');if(f)f.remove();st0.querySelector('[data-play]').hidden=false}
+  if(shCur>=0&&items[shCur]){const st0=items[shCur].querySelector('[data-stage]');unmountPlayer(st0);st0.querySelector('[data-play]').hidden=false}
   shCur=k;const v=shOrder[k];
   const stg=items[k].querySelector('[data-stage]');
   stg.querySelector('[data-play]').hidden=true;
-  stg.insertAdjacentHTML('afterbegin',`<iframe src="${ytEmbed(v.id)}" title="${esc(v.t)}" allow="autoplay; encrypted-media; picture-in-picture; clipboard-write" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`);
+  mountPlayer(stg,v,true);
   seen.add(v.id);S.set('st-seen',[...seen]);counts();
   try{history.replaceState(null,'','#shorts-'+v._i)}catch(e){}
   $('#sUp').disabled=k===0;$('#sDn').disabled=k===shOrder.length-1;
 }
 function shGo(d){const k=shCur+d;const it=$$('.sitem')[k];if(it)it.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}
-function shortsClose(){document.body.classList.remove('shorting');$('#shorts').hidden=true;$('#shorts').innerHTML='';shIO&&shIO.disconnect();shCur=-1}
+function shortsClose(){$$('[data-stage]').forEach(unmountPlayer);document.body.classList.remove('shorting');$('#shorts').hidden=true;$('#shorts').innerHTML='';shIO&&shIO.disconnect();shCur=-1}
 document.addEventListener('click',e=>{
   if(!document.body.classList.contains('shorting'))return;
   if(e.target.closest('#sUp'))return shGo(-1);
