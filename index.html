@@ -326,9 +326,9 @@ body.shorting:not(.drawer) .mini{display:block}
     <hr>
     <h3>Môn học</h3>
     <button class="ri" data-v="khtn"><span class="subj">K</span>Khoa học tự nhiên<span class="n" data-c="khtn"></span></button>
-    <button class="ri" data-v="vat-li"><span class="subj">L</span>Vật lí · THPT<span class="n" data-c="vl"></span></button>
-    <button class="ri" data-v="hoa-hoc"><span class="subj">H</span>Hoá học · THPT<span class="n" data-c="hh"></span></button>
-    <button class="ri" data-v="sinh-hoc"><span class="subj">S</span>Sinh học · THPT<span class="n" data-c="sh"></span></button>
+    <button class="ri" data-v="vat-li"><span class="subj">L</span>Vật lí<span class="n" data-c="vl"></span></button>
+    <button class="ri" data-v="hoa-hoc"><span class="subj">H</span>Hoá học<span class="n" data-c="hh"></span></button>
+    <button class="ri" data-v="sinh-hoc"><span class="subj">S</span>Sinh học<span class="n" data-c="sh"></span></button>
   </nav>
 
   <main id="main">
@@ -360,7 +360,7 @@ const st={view:'trang-chu',chip:'all',dk:0,sort:'pr',dur:0,q:''};
 const VIEW={
  'trang-chu':['Trang chủ',()=>true],'shorts':['Shorts',v=>v.sh],'uu-tien':['Nổi bật',v=>v.pr],'thi-nghiem':['Thí nghiệm thật',v=>v.tn],
  'xem-sau':['Xem sau',v=>later.has(v.id)],'da-xem':['Đã xem',v=>seen.has(v.id)],
- 'khtn':['Khoa học tự nhiên · THCS',v=>!!v.a],'vat-li':['Vật lí · THPT',v=>v.bm==='Vật lí'],'hoa-hoc':['Hoá học · THPT',v=>v.bm==='Hoá học'],'sinh-hoc':['Sinh học · THPT',v=>v.bm==='Sinh học']};
+ 'khtn':['Khoa học tự nhiên',v=>!!v.a],'vat-li':['Vật lí',v=>v.bm==='Vật lí'],'hoa-hoc':['Hoá học',v=>v.bm==='Hoá học'],'sinh-hoc':['Sinh học',v=>v.bm==='Sinh học']};
 const DK={1:'Giới thiệu',2:'Tìm hiểu',3:'Vận dụng'};
 const AVC=['#0f6b5a','#7a4a12','#2f4f86','#7b2d4a','#4d5d16','#5a3f86','#8a3b1d','#1f5f73'];
 const dur=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
@@ -372,15 +372,20 @@ const av=c=>{let h=0;for(const ch of c)h=(h*31+ch.charCodeAt(0))>>>0;return`<spa
 const yt=v=>'https://www.youtube.com/watch?v='+v.id;
 let TOPICS=[];
 
+/* Chip row: the most-viewed THPT topics of Physics, Chemistry, Biology (5 each), interleaved by subject.
+   Friendly labels for students; the second item is the exact topic name in the data. */
+const CHIP_LABEL={'Chuyên đề 10.2. Trái Đất và bầu trời':'Trái Đất và bầu trời','Công, năng lượng, công suất':'Năng lượng, công suất',
+  'Chuyên đề 10.2: HOÁ HỌC TRONG VIỆC PHÒNG CHỐNG CHÁY NỔ':'Phòng chống cháy nổ','Đại Cương Về Kim Loại':'Kim loại','Liên Kết Hoá Học':'Liên kết hoá học',
+  'Sinh thái học quần xã':'Quần xã sinh vật','Trao đổi chất và chuyển hoá năng lượng ở sinh vật':'Trao đổi chất ở sinh vật'};
 function buildTopics(){
-  const c=new Map();
-  V.forEach(v=>{[v.at,v.bt].forEach(t=>{if(t)c.set(t,(c.get(t)||0)+1)})});
-  TOPICS=[...c.entries()].filter(([t,n])=>n>=25).sort((a,b)=>b[1]-a[1]).slice(0,24).map(x=>x[0]);
+  const per=m=>{const c=new Map(),n=new Map();V.forEach(v=>{if(v.bm===m&&v.bt){c.set(v.bt,(c.get(v.bt)||0)+v.v);n.set(v.bt,(n.get(v.bt)||0)+1)}});
+    return [...c.entries()].filter(([t])=>n.get(t)>=10).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([t])=>[CHIP_LABEL[t]||t,t])};
+  const L=['Vật lí','Hoá học','Sinh học'].map(per);TOPICS=[];
+  for(let i=0;i<5;i++)L.forEach(l=>{if(l[i])TOPICS.push(l[i])});
 }
 function chips(){
-  const g=[6,7,8,9,10,11,12].map(x=>`<button class="chip" data-chip="g${x}" aria-pressed="${st.chip==='g'+x}">Lớp ${x}</button>`).join('');
-  const t=TOPICS.map((x,i)=>`<button class="chip" data-chip="t${i}" aria-pressed="${st.chip==='t'+i}">${esc(x)}</button>`).join('');
-  $('#chips').innerHTML=`<button class="chip" data-chip="all" aria-pressed="${st.chip==='all'}">Tất cả</button><button class="chip lab" data-chip="tn" aria-pressed="${st.chip==='tn'}">Có thí nghiệm</button>`+g+t;
+  const t=TOPICS.map(([l],i)=>`<button class="chip" data-chip="t${i}" aria-pressed="${st.chip==='t'+i}">${esc(l)}</button>`).join('');
+  $('#chips').innerHTML=`<button class="chip" data-chip="all" aria-pressed="${st.chip==='all'}">Tất cả</button>`+t;
   chipArrows();
 }
 function fpanel(){
@@ -395,7 +400,7 @@ function pass(v){
   const ch=st.chip;
   if(ch==='tn'&&!v.tn)return false;
   if(ch[0]==='g'&&!v.g.includes(+ch.slice(1)))return false;
-  if(ch[0]==='t'){const t=TOPICS[+ch.slice(1)];if(v.at!==t&&v.bt!==t)return false}
+  if(ch[0]==='t'){const t=TOPICS[+ch.slice(1)];if(t&&v.bt!==t[1])return false}
   if(st.dk&&v.dk!==st.dk)return false;
   if(st.dur===1&&v.d>=60||st.dur===2&&(v.d<60||v.d>180)||st.dur===3&&v.d<=180)return false;
   return true;
