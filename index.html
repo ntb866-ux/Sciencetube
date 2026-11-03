@@ -84,7 +84,7 @@ body.rail-mini .rail{display:none} body.rail-mini .mini{display:block}
 @media (max-width:1312px){ body:not(.rail-full) .rail{display:none} body:not(.rail-full) .mini{display:block} }
 @media (max-width:792px){ .mini{display:none!important} }
 /* drawer (narrow screens, and always on the watch page) */
-body.drawer .rail{display:block!important;position:fixed;left:0;top:0;bottom:0;height:auto;z-index:70;background:var(--bg);padding-top:calc(8px + env(safe-area-inset-top,0px));box-shadow:0 0 40px rgba(0,0,0,.25)}
+body.drawer .rail{display:block!important;position:fixed;left:0;top:0;bottom:0;height:100vh;height:100dvh;z-index:70;background:var(--bg);padding-top:calc(8px + env(safe-area-inset-top,0px));box-shadow:0 0 40px rgba(0,0,0,.25)}
 .dscrim{position:fixed;inset:0;background:var(--overlay);z-index:69}
 .drawer-head{display:none;align-items:center;gap:4px;height:48px;margin-bottom:4px}
 body.drawer .drawer-head{display:flex}
@@ -231,7 +231,7 @@ body.cc .sitem.on .sstage:hover .sover,body.cc .sitem.on .sover:hover{opacity:1;
 
 /* ---------- shorts player ---------- */
 body.shorting{overflow:hidden}
-body.shorting .rail{display:none!important}
+body.shorting:not(.drawer) .rail{display:none!important}
 body.shorting:not(.drawer) .mini{display:block}
 @media (max-width:792px){body.shorting .mini{display:none!important}}
 .shorts{position:fixed;top:calc(var(--top) + env(safe-area-inset-top,0px));bottom:0;right:0;left:var(--mini);z-index:15;background:var(--bg)}
