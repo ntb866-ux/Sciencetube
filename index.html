@@ -135,6 +135,7 @@ main{flex:1;min-width:0;padding-left:max(16px,env(safe-area-inset-left,0px));pad
 .ch{text-align:left;padding:0;justify-self:start}
 .ch:hover{color:var(--fg)}
 .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.lang{height:36px;padding:0 12px 0 9px;border-radius:18px;display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:13px;letter-spacing:.04em;margin-right:4px}.lang:hover{background:var(--bg2)}.lang .i{width:20px;height:20px}
 .tag{font-family:var(--f-mono);font-size:11px;padding:1px 6px;border-radius:4px;background:var(--accent-soft)}
 .tag.p{font-family:var(--f-ui);background:var(--bg2);font-size:11.5px}
 .empty{grid-column:1/-1;padding:72px 16px;text-align:center;color:var(--muted)}
@@ -300,6 +301,7 @@ body.shorting:not(.drawer) .mini{display:block}
     <form class="search" id="sf" role="search"><input id="q" type="search" placeholder="Search" autocomplete="off" aria-label="Tìm kiếm"><button aria-label="Tìm"><svg class="i" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg></button></form>
   </div>
   <div class="end">
+    <button class="lang" id="lang" aria-label="Ngôn ngữ" title="Tiếng Việt / English"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3Z"/></svg><b>VI</b></button>
     <button class="ib" id="theme" aria-label="Đổi giao diện sáng/tối"><svg class="i" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg></button>
   </div>
 </header>
@@ -356,15 +358,103 @@ const S={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}c
 let later=new Set(S.get('st-later',[])),seen=new Set(S.get('st-seen',[]));
 const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
 let V=[],list=[],shown=0;const PAGE=36;
+/* ---------- language: Vietnamese (default) / English ---------- */
+const LANG=(()=>{try{const q=new URLSearchParams(location.search).get('lang');if(q==='en'||q==='vi'){localStorage.setItem('st-lang',JSON.stringify(q));return q}}catch(e){}return S.get('st-lang','vi')==='en'?'en':'vi'})();
+const EN={
+ 'Danh mục':'Menu','Sciencetube, trang chủ':'Sciencetube home','Tìm kiếm':'Search','Tìm':'Search','Đổi giao diện sáng/tối':'Toggle light/dark theme',
+ 'Danh mục thu gọn':'Compact menu','Trang chủ':'Home','Nổi bật':'Featured','Thí nghiệm':'Experiment','Thí nghiệm thật':'Real experiments',
+ 'Xem sau':'Watch later','Đã xem':'History','Đóng danh mục':'Close menu','Của bạn':'You','Môn học':'Subjects',
+ 'Khoa học tự nhiên':'Natural Science','Vật lí':'Physics','Hoá học':'Chemistry','Sinh học':'Biology',
+ 'Cuộn trái':'Scroll left','Cuộn phải':'Scroll right','Chủ đề':'Topics','Bộ lọc':'Filters',
+ 'Đang tải thư viện video':'Loading the video library','Khoảng 2.500 video, chỉ mất vài giây.':'About 2,500 videos, it only takes a few seconds.',
+ 'Tất cả':'All','Mức độ':'Level','Mọi mức':'Any level','Giới thiệu':'Introduction','Tìm hiểu':'Explore','Vận dụng':'Apply',
+ 'Thời lượng':'Duration','Mọi thời lượng':'Any duration','Dưới 1 phút':'Under 1 minute','1–3 phút':'1–3 minutes','3–5 phút':'3–5 minutes',
+ 'Sắp xếp theo':'Sort by','Đề xuất':'Recommended','Lượt xem':'Most viewed','Ngắn nhất':'Shortest','Ngày tải lên':'Upload date',
+ 'Danh sách Xem sau đang trống':'Your Watch later list is empty','Bạn chưa mở video nào':'You have not opened any videos yet','Không có video khớp bộ lọc':'No videos match these filters',
+ 'Mở một video và bấm “Xem sau” để lưu vào đây.':'Open a video and press “Watch later” to save it here.','Thử chọn “Tất cả” hoặc bỏ bớt bộ lọc.':'Try “All” or remove some filters.',
+ 'Lớp':'Grade','lượt xem':'views','Cùng lớp':'Same grade','Mở trên YouTube':'Open on YouTube','Đã lưu Xem sau':'Saved to Watch later','Chia sẻ':'Share',
+ 'Có':'Yes','Không':'No','Phù hợp':'Suits','lớp':'grade','Kiến thức liên quan':'Related topics','Video liên quan':'Related videos',
+ 'Video cùng chủ đề':'Videos on the same topic','Chưa có video liên quan.':'No related videos yet.',
+ 'Zalo, khác…':'More…','Sao chép':'Copy','Đường link':'Link','Đóng':'Close','Đã chép link':'Link copied',
+ 'Đã chép link. Dán vào cuộc trò chuyện Messenger.':'Link copied. Paste it into a Messenger chat.','Hãy bấm giữ để chép link':'Press and hold to copy the link',
+ 'Hiện thêm':'Show more','Đã bật phụ đề (nếu video có phụ đề)':'Captions on (if the video has them)','Đã tắt phụ đề':'Captions off','Bật tiếng':'Unmute',
+ 'Không có Shorts khớp bộ lọc':'No Shorts match these filters','Về Trang chủ và chọn “Tất cả”.':'Go Home and choose “All”.',
+ 'Video trước':'Previous video','Video tiếp theo':'Next video','Phát':'Play','Vì sao?':'Why?','Phụ đề':'Captions',
+ 'Thử thách: xem một lần không bật tiếng, đoán xem chuyện gì đang xảy ra và vì sao. Sau đó xem lại để kiểm tra dự đoán của bạn.':'Challenge: watch once with the sound off and guess what is happening and why. Then watch again to check your prediction.',
+ 'Không tải được thư viện video':'Could not load the video library','Tải lại trang để thử lần nữa.':'Reload the page to try again.',
+ 'Kết quả cho':'Results for','Ngôn ngữ':'Language'
+};
+/* static HTML labels whose wording differs from the same Vietnamese word elsewhere */
+const EN_STATIC={'Thí nghiệm':'Experiments'};
+const TOPIC_EN={
+ 'Acid – Base – pH – Oxide – Muối':'Acids, bases, pH, oxides and salts','Bảo vệ môi trường':'Protecting the environment','Chất tinh khiết, hỗn hợp, dung dịch':'Pure substances, mixtures and solutions',
+ 'Các phép đo':'Measurement','Các thể (trạng thái) của chất':'States of matter','Cân bằng tự nhiên':'Balance in nature','Cảm ứng ở sinh vật':'Responses in living things',
+ 'Da và điều hoà thân nhiệt ở người':'Skin and body temperature','Di truyền học với con người':'Human genetics','Di truyền nhiễm sắc thể':'Chromosomes and heredity',
+ 'Dinh dưỡng và tiêu hoá ở người':'Nutrition and digestion','Ethylic alcohol (ancol etylic) và acetic acid (axit axetic)':'Ethanol and acetic acid','Hiện tượng di truyền':'Heredity',
+ 'Hydrocarbon (hiđrocacbon) và nguồn nhiên liệu':'Hydrocarbons and fuels','Hệ hô hấp ở người':'The respiratory system','Hệ sinh thái':'Ecosystems',
+ 'Hệ thần kinh và các giác quan ở người':'The nervous system and senses','Hệ vận động ở người':'Bones and muscles','Khai thác tài nguyên từ vỏ Trái đất':'Resources from the Earth’s crust',
+ 'Khái quát về cơ thể người':'The human body','Khối lượng riêng và áp suất':'Density and pressure','Kim loại':'Metals','Lipid (Lipit) –Carbohydrate (cacbohiđrat) – Protein':'Lipids, carbohydrates and proteins',
+ 'Lực':'Forces','Máu và hệ tuần hoàn của cơ thể người':'Blood and circulation','Môi trường và các nhân tố sinh thái':'Environment and ecological factors',
+ 'Một số vật liệu, nhiên liệu, nguyên liệu, lương thực, thực phẩm thông dụng; tính chất và ứng dụng của chúng':'Everyday materials, fuels and foods','Mở đầu':'Getting started',
+ 'Nguyên tử. Nguyên tố hoá học':'Atoms and elements','Nhiệt':'Heat','Năng lượng':'Energy','Năng lượng cơ học':'Mechanical energy','Năng lượng với cuộc sống':'Energy in everyday life',
+ 'Oxygen (oxi) và không khí':'Oxygen and air','Phân bón hoá học':'Chemical fertilisers','Phân tử':'Molecules','Phản ứng hoá học':'Chemical reactions','Sinh sản':'Reproduction',
+ 'Sinh sản ở sinh vật':'Reproduction in living things','Sinh trưởng và phát triển ở sinh vật':'Growth and development','Sơ lược về bảng tuần hoàn các nguyên tố hoá học':'The periodic table',
+ 'Tiến hoá':'Evolution','Trao đổi chất và chuyển hoá năng lượng ở sinh vật':'Metabolism in living things','Trái Đất và bầu trời':'Earth and sky','Tác dụng làm quay của lực':'Turning effect of forces',
+ 'Tách chất ra khỏi hỗn hợp':'Separating mixtures','Tế bào – đơn vị cơ sở của sự sống':'Cells, the units of life','Tốc độ':'Speed','Tốc độ phản ứng và chất xúc tác':'Reaction rates and catalysts',
+ 'Từ':'Magnetism','Từ gene đến protein':'From genes to proteins','Ánh sáng':'Light','Âm thanh':'Sound','Đa dạng thế giới sống':'Diversity of life','Điện':'Electricity','Điện từ':'Electromagnetism',
+ 'Biến dạng của vật rắn':'Deformation of solids','Bảng Tuần Hoàn Các Nguyên Tố Hoá Học':'The periodic table','Carbohydrate':'Carbohydrates','Chu kì tế bào và phân bào':'The cell cycle and cell division',
+ 'Chuyên đề 10.1: CƠ SỞ HOÁ HỌC':'Foundations of chemistry','Chuyên đề 10.2. Trái Đất và bầu trời':'Earth and sky','Chuyên đề 10.2: HOÁ HỌC TRONG VIỆC PHÒNG CHỐNG CHÁY NỔ':'Fire and explosion safety',
+ 'Chuyên đề 10.3. Vật lí với giáo dục về bảo vệ môi trường':'Physics and the environment','Chuyên đề 10.3: CÔNG NGHỆ VI SINH VẬT TRONG XỬ LÍ Ô NHIỄM MÔI TRƯỜNG':'Microbes that clean up pollution',
+ 'Chuyên đề 11.1. Trường hấp dẫn':'Gravitational fields','Chuyên đề 11.2: MỘT SỐ BỆNH DỊCH Ở NGƯỜI VÀ CÁCH PHÒNG, CHỐNG':'Epidemics and prevention','Chuyên đề 11.3. Mở đầu về điện tử học':'Introduction to electronics',
+ 'Chuyên đề 12.2: TRẢI NGHIỆM, THỰC HÀNH HOÁ HỌC VÔ CƠ':'Hands-on inorganic chemistry','Chuyên đề 12.3. Vật lí lượng tử':'Quantum physics','Chuyển động tròn':'Circular motion',
+ 'Các bằng chứng tiến hoá':'Evidence for evolution','Cân Bằng Hoá Học':'Chemical equilibrium','Công, năng lượng, công suất':'Work, energy and power','Cấu Tạo Nguyên Tử':'Atomic structure',
+ 'Dao động':'Oscillations','Di truyền học người':'Human genetics','Di truyền phân tử':'Molecular genetics','Dòng điện, mạch điện':'Current and circuits','Ester – Lipid':'Esters and lipids',
+ 'Giới Thiệu Chung Về Các Cấp Độ Tổ Chức Của Thế Giới Sống':'Levels of organisation of life','Hợp Chất Chứa Nitrogen':'Nitrogen compounds','Khí lí tưởng':'Ideal gases','Liên Kết Hoá Học':'Chemical bonding',
+ 'Mối quan hệ kiểu gene – môi trường – kiểu hình':'Genes, environment and traits','Nguyên Tố Nhóm Viia':'Group VIIA elements (halogens)','Nguyên tố nhóm IA':'Group IA elements (alkali metals)',
+ 'Nguyên tố nhóm IIA':'Group IIA elements','Nhập môn hoá học':'Introduction to chemistry','Nitrogen Và Sulfur':'Nitrogen and sulfur','Năng Lượng Hoá Học':'Chemical energy',
+ 'Pin Điện Và Điện Phân':'Batteries and electrolysis','Polymer':'Polymers','Sinh thái học phục hồi, bảo tồn và phát triển bền vững':'Conservation and sustainability',
+ 'Sinh thái học quần thể':'Population ecology','Sinh thái học quần xã':'Ecological communities','Sóng':'Waves','Sơ Lược Về Dãy Kim Loại Chuyển Tiếp Thứ Nhất Và Phức Chất':'Transition metals and complexes',
+ 'Thuyết tiến hoá tổng hợp hiện đại':'Modern theory of evolution','Tiến hoá lớn và phát sinh chủng loại':'Macroevolution and the tree of life','Trao đổi chất và chuyển hoá năng lượng ở tế bào':'Cell metabolism',
+ 'Trường từ (Từ trường)':'Magnetic fields','Trường điện (Điện trường)':'Electric fields','Tốc Độ Phản Ứng Hoá Học':'Reaction rates','Vi sinh vật':'Microorganisms','Virus và các ứng dụng':'Viruses and their uses',
+ 'Vật lí hạt nhân và phóng xạ':'Nuclear physics and radioactivity','Vật lí nhiệt':'Thermal physics','Đại Cương Hoá Học Hữu Cơ':'Introduction to organic chemistry','Đại Cương Về Kim Loại':'Metals',
+ 'Động học':'Kinematics','Động lượng':'Momentum','Động lực học':'Dynamics'
+};
+const tr=s=>LANG==='en'?(EN[s]??s):s;
+const trT=s=>LANG==='en'?(TOPIC_EN[s]??s):s;
+const LOC=LANG==='en'?'en-US':'vi-VN';
+/* view slugs in the address bar: Vietnamese ids inside the code, English slugs when the site is in English */
+const SLUG_EN={'trang-chu':'home','uu-tien':'featured','thi-nghiem':'experiments','xem-sau':'watch-later','da-xem':'history','khtn':'natural-science','vat-li':'physics','hoa-hoc':'chemistry','sinh-hoc':'biology'};
+const SLUG_VI=Object.fromEntries(Object.entries(SLUG_EN).map(([a,b])=>[b,a]));
+const slug=v=>LANG==='en'?(SLUG_EN[v]||v):v;
+function i18nStatic(){
+  document.documentElement.lang=LANG;
+  document.querySelectorAll('.vn').forEach(e=>e.textContent=LANG==='en'?'EN':'VN');
+  document.querySelectorAll('#lang b').forEach(e=>e.textContent=LANG==='en'?'EN':'VI');
+  if(LANG!=='en')return;
+  document.title='Sciencetube';
+  const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement.closest('script,style')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+  const ns=[];while(w.nextNode())ns.push(w.currentNode);
+  ns.forEach(n=>{const t=n.nodeValue.trim();if(!t)return;const e=EN_STATIC[t]??EN[t];if(e)n.nodeValue=n.nodeValue.replace(t,e)});
+  document.querySelectorAll('[aria-label],[placeholder]').forEach(e=>{['aria-label','placeholder'].forEach(a=>{const v=e.getAttribute(a);if(v&&EN[v])e.setAttribute(a,EN[v])})});
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{const h=a.getAttribute('href').slice(1);if(SLUG_EN[h])a.setAttribute('href','#'+SLUG_EN[h])});
+}
+function setLang(l){
+  S.set('st-lang',l);
+  const h=location.hash.slice(1),base=SLUG_VI[h]||h;
+  const nh=l==='en'?(SLUG_EN[base]||base):base;
+  try{history.replaceState(null,'',location.pathname+(nh?'#'+nh:''))}catch(e){}location.reload();
+}
+
 const st={view:'trang-chu',chip:'all',dk:0,sort:'pr',dur:0,q:''};
 const VIEW={
  'trang-chu':['Trang chủ',()=>true],'shorts':['Shorts',v=>v.sh],'uu-tien':['Nổi bật',v=>v.pr],'thi-nghiem':['Thí nghiệm thật',v=>v.tn],
  'xem-sau':['Xem sau',v=>later.has(v.id)],'da-xem':['Đã xem',v=>seen.has(v.id)],
  'khtn':['Khoa học tự nhiên',v=>!!v.a],'vat-li':['Vật lí',v=>v.bm==='Vật lí'],'hoa-hoc':['Hoá học',v=>v.bm==='Hoá học'],'sinh-hoc':['Sinh học',v=>v.bm==='Sinh học']};
-const DK={1:'Giới thiệu',2:'Tìm hiểu',3:'Vận dụng'};
+const DK={1:tr('Giới thiệu'),2:tr('Tìm hiểu'),3:tr('Vận dụng')};
+Object.values(VIEW).forEach(x=>x[0]=tr(x[0]));
 const AVC=['#0f6b5a','#7a4a12','#2f4f86','#7b2d4a','#4d5d16','#5a3f86','#8a3b1d','#1f5f73'];
 const dur=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
-const views=n=>n>=1e9?(n/1e9).toFixed(1).replace('.',',')+' tỉ':n>=1e6?(n/1e6).toFixed(1).replace('.',',')+' Tr':n>=1e3?Math.round(n/1e3)+' N':String(n);
+const views=n=>{const en=LANG==='en',d=x=>en?x:x.replace('.',',');return n>=1e9?d((n/1e9).toFixed(1))+(en?'B':' tỉ'):n>=1e6?d((n/1e6).toFixed(1))+(en?'M':' Tr'):n>=1e3?Math.round(n/1e3)+(en?'K':' N'):String(n)};
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fold=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/gi,'d').toLowerCase();
 const bg=v=>'';const img=v=>`<img src="https://i.ytimg.com/vi/${v.id}/mqdefault.jpg" alt="" loading="lazy" decoding="async">`;
@@ -379,17 +469,17 @@ const CHIP_LABEL={'Chuyên đề 10.2. Trái Đất và bầu trời':'Trái Đ�
   'Sinh thái học quần xã':'Quần xã sinh vật','Trao đổi chất và chuyển hoá năng lượng ở sinh vật':'Trao đổi chất ở sinh vật'};
 function buildTopics(){
   const per=m=>{const c=new Map(),n=new Map();V.forEach(v=>{if(v.bm===m&&v.bt){c.set(v.bt,(c.get(v.bt)||0)+v.v);n.set(v.bt,(n.get(v.bt)||0)+1)}});
-    return [...c.entries()].filter(([t])=>n.get(t)>=10).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([t])=>[CHIP_LABEL[t]||t,t])};
+    return [...c.entries()].filter(([t])=>n.get(t)>=10).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([t])=>[LANG==='en'?trT(t):(CHIP_LABEL[t]||t),t])};
   const L=['Vật lí','Hoá học','Sinh học'].map(per);TOPICS=[];
   for(let i=0;i<5;i++)L.forEach(l=>{if(l[i])TOPICS.push(l[i])});
 }
 function chips(){
   const t=TOPICS.map(([l],i)=>`<button class="chip" data-chip="t${i}" aria-pressed="${st.chip==='t'+i}">${esc(l)}</button>`).join('');
-  $('#chips').innerHTML=`<button class="chip" data-chip="all" aria-pressed="${st.chip==='all'}">Tất cả</button>`+t;
+  $('#chips').innerHTML=`<button class="chip" data-chip="all" aria-pressed="${st.chip==='all'}">${tr('Tất cả')}</button>`+t;
   chipArrows();
 }
 function fpanel(){
-  const grp=(h,key,opts)=>`<div><h4>${h}</h4>${opts.map(([val,l])=>`<button class="fopt" data-f="${key}" data-val="${val}" aria-pressed="${st[key]==val}">${l}</button>`).join('')}</div>`;
+  const grp=(h,key,opts)=>`<div><h4>${tr(h)}</h4>${opts.map(([val,l])=>`<button class="fopt" data-f="${key}" data-val="${val}" aria-pressed="${st[key]==val}">${tr(l)}</button>`).join('')}</div>`;
   $('#fp').innerHTML=grp('Mức độ','dk',[[0,'Mọi mức'],[1,'Giới thiệu'],[2,'Tìm hiểu'],[3,'Vận dụng']])+
     grp('Thời lượng','dur',[[0,'Mọi thời lượng'],[1,'Dưới 1 phút'],[2,'1–3 phút'],[3,'3–5 phút']])+
     grp('Sắp xếp theo','sort',[['pr','Đề xuất'],['views','Lượt xem'],['short','Ngắn nhất'],['new','Ngày tải lên']]);
@@ -411,16 +501,16 @@ function render(){
   list=V.filter(v=>f(v)&&pass(v)&&(!q||v._s.includes(q))&&!(home&&v.sh));
   shelf(home);
   if(st.sort==='views')list.sort((a,b)=>b.v-a.v);else if(st.sort==='short')list.sort((a,b)=>a.d-b.d);else if(st.sort==='new')list.sort((a,b)=>(b.p||'').localeCompare(a.p||''));
-  $('#ht').textContent=st.q?`Kết quả cho “${st.q}”`:VIEW[st.view][0];
-  $('#hc').textContent=list.length.toLocaleString('vi-VN')+' video';
+  $('#ht').textContent=st.q?`${tr('Kết quả cho')} “${st.q}”`:VIEW[st.view][0];
+  $('#hc').textContent=list.length.toLocaleString(LOC)+(LANG==='en'?(list.length===1?' video':' videos'):' video');
   $('#grid').innerHTML='';shown=0;
-  if(!list.length){$('#grid').innerHTML=`<div class="empty"><strong>${st.view==='xem-sau'?'Danh sách Xem sau đang trống':st.view==='da-xem'?'Bạn chưa mở video nào':'Không có video khớp bộ lọc'}</strong>${st.view==='xem-sau'?'Mở một video và bấm “Xem sau” để lưu vào đây.':'Thử chọn “Tất cả” hoặc bỏ bớt bộ lọc.'}</div>`;return}
+  if(!list.length){$('#grid').innerHTML=`<div class="empty"><strong>${tr(st.view==='xem-sau'?'Danh sách Xem sau đang trống':st.view==='da-xem'?'Bạn chưa mở video nào':'Không có video khớp bộ lọc')}</strong>${tr(st.view==='xem-sau'?'Mở một video và bấm “Xem sau” để lưu vào đây.':'Thử chọn “Tất cả” hoặc bỏ bớt bộ lọc.')}</div>`;return}
   more();
 }
-function tags(v){const t=(v.g||[]).map(g=>`<span class="tag">Lớp ${g}</span>`);if(v.dk)t.push(`<span class="tag p">${DK[v.dk]}</span>`);return t.join('')}
+function tags(v){const t=(v.g||[]).map(g=>`<span class="tag">${tr('Lớp')} ${g}</span>`);if(v.dk)t.push(`<span class="tag p">${DK[v.dk]}</span>`);return t.join('')}
 function card(v){
-  return `<article class="card"><a class="thumb" href="${link(v)}" style="${bg(v)}" aria-label="${esc(v.t)}">${img(v)}${v.tn?'<span class="badge">Thí nghiệm</span>':''}<span class="dur">${v.sh?'Shorts':dur(v.d)}</span>${seen.has(v.id)?'<span class="seenbar"></span>':''}</a>
-  <div class="row">${av(v.c)}<div class="info"><a class="ti" href="${link(v)}">${esc(v.t)}</a><div class="vi">${esc(v.ht)}</div><button class="ch" data-q="${esc(v.c)}">${esc(v.c)}</button><div class="st">${views(v.v)} lượt xem${v.p?' · '+v.p:''}</div><div class="tags">${tags(v)}</div></div></div></article>`;
+  return `<article class="card"><a class="thumb" href="${link(v)}" style="${bg(v)}" aria-label="${esc(v.t)}">${img(v)}${v.tn?`<span class="badge">${tr('Thí nghiệm')}</span>`:''}<span class="dur">${v.sh?'Shorts':dur(v.d)}</span>${seen.has(v.id)?'<span class="seenbar"></span>':''}</a>
+  <div class="row">${av(v.c)}<div class="info"><a class="ti" href="${link(v)}">${esc(v.t)}</a>${LANG==='en'?'':`<div class="vi">${esc(v.ht)}</div>`}<button class="ch" data-q="${esc(v.c)}">${esc(v.c)}</button><div class="st">${views(v.v)} ${tr('lượt xem')}${v.p?' · '+v.p:''}</div><div class="tags">${tags(v)}</div></div></div></article>`;
 }
 function more(){const n=list.slice(shown,shown+PAGE);$('#grid').insertAdjacentHTML('beforeend',n.map(card).join(''));shown+=n.length}
 
@@ -428,43 +518,43 @@ function related(v){
   const out=[],seenIds=new Set([v.id]);
   const add=(arr,why)=>{for(const x of arr){if(out.length>=20)return;if(seenIds.has(x.id))continue;seenIds.add(x.id);out.push([x,why])}};
   const by=(fn)=>V.filter(fn).sort((a,b)=>(b.pr-a.pr)||(b.v-a.v));
-  if(v.a)add(by(x=>x.a===v.a),v.at);
-  if(v.b)add(by(x=>x.b===v.b),v.bt);
-  if(v.at)add(by(x=>x.at===v.at),v.at);
-  if(v.bt)add(by(x=>x.bt===v.bt),v.bt);
-  add(by(x=>x.g.some(g=>v.g.includes(g))&&x.tn===v.tn),'Cùng lớp');
+  if(v.a)add(by(x=>x.a===v.a),trT(v.at));
+  if(v.b)add(by(x=>x.b===v.b),trT(v.bt));
+  if(v.at)add(by(x=>x.at===v.at),trT(v.at));
+  if(v.bt)add(by(x=>x.bt===v.bt),trT(v.bt));
+  add(by(x=>x.g.some(g=>v.g.includes(g))&&x.tn===v.tn),tr('Cùng lớp'));
   return out;
 }
 function watch(i){
   const v=V[i];if(!v)return go('trang-chu');
   document.body.classList.add('watching');$('#browse').hidden=true;
   const yc=[];
-  if(v.a)yc.push(`<div class="ycr"><span class="lvl">Lớp ${esc(v.al)} · Khoa học tự nhiên</span><span class="tp">${esc(v.at)}</span></div>`);
-  if(v.b)yc.push(`<div class="ycr"><span class="lvl">Lớp ${esc(v.bl)} · ${esc(v.bm)}</span><span class="tp">${esc(v.bt)}</span></div>`);
-  const rel=related(v).map(([x,why])=>`<article class="rcard"><a class="thumb" href="#v-${x._i}" style="${bg(x)}" aria-label="${esc(x.t)}">${img(x)}<span class="dur">${dur(x.d)}</span>${seen.has(x.id)?'<span class="seenbar"></span>':''}</a><div class="info"><a class="ti" href="#v-${x._i}">${esc(x.t)}</a><span class="ch">${esc(x.c)}</span><span class="st">${views(x.v)} lượt xem</span><span class="rwhy">${esc(why)}</span></div></article>`).join('');
+  if(v.a)yc.push(`<div class="ycr"><span class="lvl">${tr('Lớp')} ${esc(v.al)} · ${tr('Khoa học tự nhiên')}</span><span class="tp">${esc(trT(v.at))}</span></div>`);
+  if(v.b)yc.push(`<div class="ycr"><span class="lvl">${tr('Lớp')} ${esc(v.bl)} · ${esc(tr(v.bm))}</span><span class="tp">${esc(trT(v.bt))}</span></div>`);
+  const rel=related(v).map(([x,why])=>`<article class="rcard"><a class="thumb" href="#v-${x._i}" style="${bg(x)}" aria-label="${esc(x.t)}">${img(x)}<span class="dur">${dur(x.d)}</span>${seen.has(x.id)?'<span class="seenbar"></span>':''}</a><div class="info"><a class="ti" href="#v-${x._i}">${esc(x.t)}</a><span class="ch">${esc(x.c)}</span><span class="st">${views(x.v)} ${tr('lượt xem')}</span><span class="rwhy">${esc(why)}</span></div></article>`).join('');
   $('#watch').innerHTML=`<div style="min-width:0">
     <div class="player" id="wplayer"></div>
     <h1 class="wtitle">${esc(v.t)}</h1>
-    <p class="wvi">${esc(v.ht)}</p>
-    <div class="owner"><div class="who">${av(v.c)}<div><b>${esc(v.c)}</b><small>${views(v.v)} lượt xem${v.p?' · '+v.p:''}</small></div></div>
-      <div class="acts"><a class="pill" href="${yt(v)}" target="_blank" rel="noopener" data-watch><svg class="i" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>Mở trên YouTube</a><button class="pill" id="lat"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span>${later.has(v.id)?'Đã lưu Xem sau':'Xem sau'}</span></button><button class="pill" id="wshare"><svg class="i" viewBox="0 0 24 24"><path d="M14 5l7 7-7 7M21 12H9a6 6 0 0 0-6 6"/></svg>Chia sẻ</button></div></div>
+    ${LANG==='en'?'':`<p class="wvi">${esc(v.ht)}</p>`}
+    <div class="owner"><div class="who">${av(v.c)}<div><b>${esc(v.c)}</b><small>${views(v.v)} ${tr('lượt xem')}${v.p?' · '+v.p:''}</small></div></div>
+      <div class="acts"><a class="pill" href="${yt(v)}" target="_blank" rel="noopener" data-watch><svg class="i" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>${tr('Mở trên YouTube')}</a><button class="pill" id="lat"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span>${tr(later.has(v.id)?'Đã lưu Xem sau':'Xem sau')}</span></button><button class="pill" id="wshare"><svg class="i" viewBox="0 0 24 24"><path d="M14 5l7 7-7 7M21 12H9a6 6 0 0 0-6 6"/></svg>${tr('Chia sẻ')}</button></div></div>
     <div class="desc">
-      <div class="facts"><span>Thời lượng <b>${dur(v.d)}</b></span><span>Mức độ <b>${v.dk?DK[v.dk]:'—'}</b></span><span>Thí nghiệm thật <b>${v.tn?'Có':'Không'}</b></span>${v.g.length?`<span>Phù hợp <b>lớp ${v.g.join(', ')}</b></span>`:''}</div>
-      ${yc.length?`<h4 class="ych">Kiến thức liên quan</h4><div class="yc">${yc.join('')}</div>`:''}
+      <div class="facts"><span>${tr('Thời lượng')} <b>${dur(v.d)}</b></span><span>${tr('Mức độ')} <b>${v.dk?DK[v.dk]:'—'}</b></span><span>${LANG==='en'?'Real experiment':'Thí nghiệm thật'} <b>${tr(v.tn?'Có':'Không')}</b></span>${v.g.length?(LANG==='en'?`<span>${v.g.length>1?'Grades':'Grade'} <b>${v.g.join(', ')}</b></span>`:`<span>Phù hợp <b>lớp ${v.g.join(', ')}</b></span>`):''}</div>
+      ${yc.length?`<h4 class="ych">${tr('Kiến thức liên quan')}</h4><div class="yc">${yc.join('')}</div>`:''}
     </div>
   </div>
-  <aside class="related" aria-label="Video liên quan"><h2>Video cùng chủ đề</h2>${rel||'<p class="st">Chưa có video liên quan.</p>'}</aside>`;
+  <aside class="related" aria-label="${tr('Video liên quan')}"><h2>${tr('Video cùng chủ đề')}</h2>${rel||`<p class="st">${tr('Chưa có video liên quan.')}</p>`}</aside>`;
   $('#watch').hidden=false;window.scrollTo(0,0);mountPlayer($('#wplayer'),v,false);seen.add(v.id);S.set('st-seen',[...seen]);counts();
   $('#watch').onclick=e=>{
     if(e.target.closest('[data-watch]')){seen.add(v.id);S.set('st-seen',[...seen]);counts()}
     if(e.target.closest('#wshare')){openShare(v);return}
-    if(e.target.closest('#lat')){later.has(v.id)?later.delete(v.id):later.add(v.id);S.set('st-later',[...later]);$('#lat span').textContent=later.has(v.id)?'Đã lưu Xem sau':'Xem sau';counts()}
+    if(e.target.closest('#lat')){later.has(v.id)?later.delete(v.id):later.add(v.id);S.set('st-later',[...later]);$('#lat span').textContent=tr(later.has(v.id)?'Đã lưu Xem sau':'Xem sau');counts()}
   };
 }
 function counts(){
   const c={all:V.length,pr:0,tn:0,khtn:0,vl:0,hh:0,sh:0,shorts:0,later:later.size,seen:seen.size};
   V.forEach(v=>{v.sh&&c.shorts++;v.pr&&c.pr++;v.tn&&c.tn++;v.a&&c.khtn++;v.bm==='Vật lí'&&c.vl++;v.bm==='Hoá học'&&c.hh++;v.bm==='Sinh học'&&c.sh++});
-  $$('[data-c]').forEach(e=>e.textContent=(c[e.dataset.c]||0).toLocaleString('vi-VN'));
+  $$('[data-c]').forEach(e=>e.textContent=(c[e.dataset.c]||0).toLocaleString(LOC));
 }
 
 const link=v=>v.sh?`#shorts-${v._i}`:`#v-${v._i}`;
@@ -483,12 +573,12 @@ function openShare(v){
     more:'<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.8" fill="#fff"/><circle cx="12" cy="12" r="1.8" fill="#fff"/><circle cx="18" cy="12" r="1.8" fill="#fff"/></svg>',
     cp:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>'};
   const opts=[['fb','Facebook','#1877f2'],['ms','Messenger','linear-gradient(135deg,#0099ff,#a033ff 60%,#ff5280)']];
-  if(navigator.share)opts.push(['more','Zalo, khác…','#5f6368']);
-  opts.push(['cp','Sao chép','#3c4043']);
+  if(navigator.share)opts.push(['more',tr('Zalo, khác…'),'#5f6368']);
+  opts.push(['cp',tr('Sao chép'),'#3c4043']);
   const m=document.createElement('div');m.id='share';m.className='shmodal';
-  m.innerHTML=`<div class="shbox" role="dialog" aria-modal="true" aria-label="Chia sẻ"><div class="shhd"><strong>Chia sẻ</strong><button class="shx" data-x aria-label="Đóng"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  m.innerHTML=`<div class="shbox" role="dialog" aria-modal="true" aria-label="${tr('Chia sẻ')}"><div class="shhd"><strong>${tr('Chia sẻ')}</strong><button class="shx" data-x aria-label="${tr('Đóng')}"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
   <div class="shrow">${opts.map(([k,l,c])=>`<button class="sho" data-sh="${k}"><span style="background:${c}">${ic[k]}</span>${l}</button>`).join('')}</div>
-  <div class="shlink"><input readonly value="${esc(u)}" aria-label="Đường link"><button data-sh="cp">Sao chép</button></div></div>`;
+  <div class="shlink"><input readonly value="${esc(u)}" aria-label="${tr('Đường link')}"><button data-sh="cp">${tr('Sao chép')}</button></div></div>`;
   document.body.appendChild(m);
   m.addEventListener('click',e=>{
     if(e.target===m||e.target.closest('[data-x]'))return closeShare();
@@ -496,10 +586,10 @@ function openShare(v){
     if(k==='fb')popup('https://www.facebook.com/sharer/sharer.php?u='+eu);
     else if(k==='ms'){
       if(isMobile)location.href='fb-messenger://share/?link='+eu;
-      else copyText(u).then(()=>{toast('Đã chép link. Dán vào cuộc trò chuyện Messenger.');window.open('https://www.messenger.com/','_blank','noopener')},()=>window.open('https://www.messenger.com/','_blank','noopener'));
+      else copyText(u).then(()=>{toast(tr('Đã chép link. Dán vào cuộc trò chuyện Messenger.'));window.open('https://www.messenger.com/','_blank','noopener')},()=>window.open('https://www.messenger.com/','_blank','noopener'));
     }
     else if(k==='more')navigator.share({title:v.t,text:v.t+' · Sciencetube',url:u}).catch(()=>{});
-    else if(k==='cp')copyText(u).then(()=>{toast('Đã chép link');closeShare()},()=>{m.querySelector('input').select();toast('Hãy bấm giữ để chép link')});
+    else if(k==='cp')copyText(u).then(()=>{toast(tr('Đã chép link'));closeShare()},()=>{m.querySelector('input').select();toast(tr('Hãy bấm giữ để chép link'))});
   });
 }
 addEventListener('keydown',e=>{if($('#share')&&e.key==='Escape'){e.stopImmediatePropagation();closeShare()}},true);
@@ -514,8 +604,8 @@ function shelf(show){
   if(!pool.length){el.innerHTML='';return}
   const n=pool.slice(0,shelfN);
   el.innerHTML=`<section class="shelf" aria-label="Shorts"><div class="shelf-h"><span class="logo-s"><svg viewBox="0 0 24 24"><path d="m9 7 9 5-9 5Z"/></svg></span><h2>Shorts</h2></div>
-   <div class="shelf-row">${n.map(v=>`<article class="scard"><a class="vthumb" href="#shorts-${v._i}" aria-label="${esc(v.t)}">${vimg(v)}${v.tn?'<span class="badge" style="bottom:auto;top:8px">Thí nghiệm</span>':''}</a><div class="info" style="padding-right:4px"><a class="ti" href="#shorts-${v._i}">${esc(v.t)}</a><span class="st">${views(v.v)} lượt xem</span></div></article>`).join('')}</div>
-   ${pool.length>shelfN?`<div class="shelf-more"><button id="shMore">Hiện thêm</button></div>`:''}</section>`;
+   <div class="shelf-row">${n.map(v=>`<article class="scard"><a class="vthumb" href="#shorts-${v._i}" aria-label="${esc(v.t)}">${vimg(v)}${v.tn?`<span class="badge" style="bottom:auto;top:8px">${tr('Thí nghiệm')}</span>`:''}</a><div class="info" style="padding-right:4px"><a class="ti" href="#shorts-${v._i}">${esc(v.t)}</a><span class="st">${views(v.v)} ${tr('lượt xem')}</span></div></article>`).join('')}</div>
+   ${pool.length>shelfN?`<div class="shelf-more"><button id="shMore">${tr('Hiện thêm')}</button></div>`:''}</section>`;
   const b=$('#shMore');if(b)b.onclick=()=>{shelfN+=12;shelf(true)};
 }
 
@@ -529,14 +619,14 @@ function applyCC(p,el){try{if(ccOn){p.loadModule('captions');p.setOption('captio
 function setCC(on){ccOn=on;S.set('st-cc',on);document.body.classList.toggle('cc',on);
   $$('[data-act="cc"]').forEach(b=>b.setAttribute('aria-pressed',on));
   $$('[data-stage],#wplayer').forEach(el=>{if(el._yt)applyCC(el._yt,el)});
-  toast(on?'Đã bật phụ đề (nếu video có phụ đề)':'Đã tắt phụ đề')}
+  toast(tr(on?'Đã bật phụ đề (nếu video có phụ đề)':'Đã tắt phụ đề'))}
 document.body.classList.toggle('cc',ccOn);
 function ytApi(){if(ytP)return ytP;ytP=new Promise(res=>{if(window.YT&&YT.Player)return res();window.onYouTubeIframeAPIReady=()=>res();const t=document.createElement('script');t.src='https://www.youtube.com/iframe_api';document.head.appendChild(t)});return ytP}
 function unmountPlayer(el){if(!el)return;if(el._yt){try{el._yt.destroy()}catch(e){}el._yt=null}el.querySelectorAll('.ytmount,.sound').forEach(x=>x.parentNode.removeChild(x))}
 function soundBtn(el,pl){
   if(el.querySelector('.sound'))return;
   const b=document.createElement('button');b.className='sound';b.type='button';
-  b.innerHTML='<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4Z"/><path d="m17 9 4 6M21 9l-4 6"/></svg>Bật tiếng';
+  b.innerHTML='<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4Z"/><path d="m17 9 4 6M21 9l-4 6"/></svg>'+tr('Bật tiếng');
   b.onclick=e=>{e.stopPropagation();pl.unMute();pl.setVolume(100);pl.playVideo();soundOn=true;S.set('st-sound',true);b.parentNode.removeChild(b)};
   el.appendChild(b);
 }
@@ -545,7 +635,7 @@ function mountPlayer(el,v,loop){
   const d=document.createElement('div');d.className='ytmount';el.prepend(d);
   ytApi().then(()=>{
     if(!d.isConnected)return;
-    const pv={autoplay:1,playsinline:1,rel:0,modestbranding:1,cc_lang_pref:'vi',hl:'vi'};if(ccOn)pv.cc_load_policy=1;
+    const pv={autoplay:1,playsinline:1,rel:0,modestbranding:1,cc_lang_pref:LANG,hl:LANG};if(ccOn)pv.cc_load_policy=1;
     if(loop){pv.loop=1;pv.playlist=v.id}
     const pl=new YT.Player(d,{host:'https://www.youtube-nocookie.com',videoId:v.id,playerVars:pv,
       events:{
@@ -567,9 +657,9 @@ function shortsOpen(startIdx){
   shOrder=pool.slice();
   if(startIdx!=null){const s=V[startIdx];if(s&&s.sh){shOrder=[s,...pool.filter(x=>x!==s)]}}
   const el=$('#shorts');el.hidden=false;
-  if(!shOrder.length){el.innerHTML='<div class="sempty"><div><strong>Không có Shorts khớp bộ lọc</strong>Về Trang chủ và chọn “Tất cả”.</div></div>';return}
+  if(!shOrder.length){el.innerHTML=`<div class="sempty"><div><strong>${tr('Không có Shorts khớp bộ lọc')}</strong>${tr('Về Trang chủ và chọn “Tất cả”.')}</div></div>`;return}
   el.innerHTML=`<div class="sfeed" id="sfeed">${shOrder.map((v,k)=>shItem(v,k)).join('')}</div>
-   <div class="snav"><button id="sUp" aria-label="Video trước"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button><button id="sDn" aria-label="Video tiếp theo"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button></div>`;
+   <div class="snav"><button id="sUp" aria-label="${tr('Video trước')}"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button><button id="sDn" aria-label="${tr('Video tiếp theo')}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button></div>`;
   shCur=-1;
   shIO&&shIO.disconnect();
   shIO=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)shActivate(+e.target.dataset.k)})},{root:$('#sfeed'),threshold:.6});
@@ -577,15 +667,15 @@ function shortsOpen(startIdx){
   shActivate(0);
 }
 function shItem(v,k){
-  const t=[];(v.g||[]).forEach(g=>t.push(`<span>Lớp ${g}</span>`));if(v.tn)t.unshift('<span class="lab">Thí nghiệm</span>');
+  const t=[];(v.g||[]).forEach(g=>t.push(`<span>${tr('Lớp')} ${g}</span>`));if(v.tn)t.unshift(`<span class="lab">${tr('Thí nghiệm')}</span>`);
   return `<div class="sitem" data-k="${k}">
-   <div class="sstage" data-stage>${vimg(v)}<button class="tap" data-play aria-label="Phát"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></button>
-    <div class="sover"><div class="sch">${av(v.c)}<span>${esc(v.c)}</span></div><p class="sti">${esc(v.t)}</p><p class="svi">${esc(v.ht)}</p><div class="stags">${t.join('')}</div></div></div>
+   <div class="sstage" data-stage>${vimg(v)}<button class="tap" data-play aria-label="${tr('Phát')}"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></button>
+    <div class="sover"><div class="sch">${av(v.c)}<span>${esc(v.c)}</span></div><p class="sti">${esc(v.t)}</p>${LANG==='en'?'':`<p class="svi">${esc(v.ht)}</p>`}<div class="stags">${t.join('')}</div></div></div>
    <div class="sacts">
-    <button class="sact" data-act="why" aria-pressed="${shPanel}"><span class="c"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.3 2.4c-.6.2-.9.7-.9 1.3v.5M12 16.8v.2"/></svg></span>Vì sao?</button>
-    <button class="sact" data-act="cc" aria-pressed="${ccOn}"><span class="c"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10.5 10.2a2.2 2.2 0 1 0 0 3.6M16.5 10.2a2.2 2.2 0 1 0 0 3.6"/></svg></span>Phụ đề</button>
-    <button class="sact" data-act="later" aria-pressed="${later.has(v.id)}"><span class="c"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span>Xem sau</button>
-    <button class="sact" data-act="share"><span class="c"><svg viewBox="0 0 24 24"><path d="M14 5l7 7-7 7M21 12H9a6 6 0 0 0-6 6"/></svg></span><span data-lbl>Chia sẻ</span></button>
+    <button class="sact" data-act="why" aria-pressed="${shPanel}"><span class="c"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.3 2.4c-.6.2-.9.7-.9 1.3v.5M12 16.8v.2"/></svg></span>${tr('Vì sao?')}</button>
+    <button class="sact" data-act="cc" aria-pressed="${ccOn}"><span class="c"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10.5 10.2a2.2 2.2 0 1 0 0 3.6M16.5 10.2a2.2 2.2 0 1 0 0 3.6"/></svg></span>${tr('Phụ đề')}</button>
+    <button class="sact" data-act="later" aria-pressed="${later.has(v.id)}"><span class="c"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span>${tr('Xem sau')}</button>
+    <button class="sact" data-act="share"><span class="c"><svg viewBox="0 0 24 24"><path d="M14 5l7 7-7 7M21 12H9a6 6 0 0 0-6 6"/></svg></span><span data-lbl>${tr('Chia sẻ')}</span></button>
     <a class="sact" href="${yt(v)}" target="_blank" rel="noopener"><span class="c"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span>YouTube</a>
     <span class="sact" aria-hidden="true">${av(v.c)}</span>
    </div>
@@ -594,13 +684,13 @@ function shItem(v,k){
 }
 function shPanelHTML(v){
   const yc=[];
-  if(v.a)yc.push(`<div class="ycr"><span class="lvl">Lớp ${esc(v.al)} · Khoa học tự nhiên</span><span class="tp">${esc(v.at)}</span></div>`);
-  if(v.b)yc.push(`<div class="ycr"><span class="lvl">Lớp ${esc(v.bl)} · ${esc(v.bm)}</span><span class="tp">${esc(v.bt)}</span></div>`);
-  return `<aside class="spanel" data-panel><header><h3>Vì sao?</h3><button class="ib" data-act="why" aria-label="Đóng"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
-   <div class="body"><p class="q">${esc(v.ht)}</p>
-   <div class="facts"><span>Mức độ <b>${v.dk?DK[v.dk]:'—'}</b></span><span>Thời lượng <b>${dur(v.d)}</b></span></div>
-   ${yc.length?`<h4 class="ych">Kiến thức liên quan</h4><div class="yc">${yc.join('')}</div>`:''}
-   <p class="st" style="white-space:normal">Thử thách: xem một lần không bật tiếng, đoán xem chuyện gì đang xảy ra và vì sao. Sau đó xem lại để kiểm tra dự đoán của bạn.</p>
+  if(v.a)yc.push(`<div class="ycr"><span class="lvl">${tr('Lớp')} ${esc(v.al)} · ${tr('Khoa học tự nhiên')}</span><span class="tp">${esc(trT(v.at))}</span></div>`);
+  if(v.b)yc.push(`<div class="ycr"><span class="lvl">${tr('Lớp')} ${esc(v.bl)} · ${esc(tr(v.bm))}</span><span class="tp">${esc(trT(v.bt))}</span></div>`);
+  return `<aside class="spanel" data-panel><header><h3>${tr('Vì sao?')}</h3><button class="ib" data-act="why" aria-label="${tr('Đóng')}"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
+   <div class="body"><p class="q">${esc(LANG==='en'?v.t:v.ht)}</p>
+   <div class="facts"><span>${tr('Mức độ')} <b>${v.dk?DK[v.dk]:'—'}</b></span><span>${tr('Thời lượng')} <b>${dur(v.d)}</b></span></div>
+   ${yc.length?`<h4 class="ych">${tr('Kiến thức liên quan')}</h4><div class="yc">${yc.join('')}</div>`:''}
+   <p class="st" style="white-space:normal">${tr('Thử thách: xem một lần không bật tiếng, đoán xem chuyện gì đang xảy ra và vì sao. Sau đó xem lại để kiểm tra dự đoán của bạn.')}</p>
    </div></aside>`;
 }
 function shActivate(k){
@@ -640,7 +730,7 @@ document.addEventListener('keydown',e=>{
 
 function route(){
   closeDrawer();
-  const h=location.hash.slice(1);
+  const h0=location.hash.slice(1),h=SLUG_VI[h0]||h0;
   const sm=h.match(/^shorts(?:-(\d+))?$/);
   if(sm){if(shCur>=0&&sm[1]&&shOrder[shCur]&&shOrder[shCur]._i===+sm[1])return;return shortsOpen(sm[1]!=null?+sm[1]:null)}
   shortsClose();
@@ -651,7 +741,7 @@ function route(){
   $$('[data-v]').forEach(b=>b.setAttribute('aria-current',b.dataset.v===st.view));
   render();window.scrollTo(0,0);
 }
-function go(v){if(location.hash.slice(1)===v)route();else location.hash=v}
+function go(v){const s=slug(v);if(location.hash.slice(1)===s)route();else location.hash=s}
 function openDrawer(){document.body.classList.add('drawer');const rl=$('#rail');rl.style.setProperty('display','block','important');rl.style.setProperty('z-index','200','important');const s=document.createElement('div');s.className='dscrim';s.onclick=closeDrawer;document.body.appendChild(s)}
 function closeDrawer(){document.body.classList.remove('drawer');const rl=$('#rail');rl.style.removeProperty('display');rl.style.removeProperty('z-index');$$('.dscrim').forEach(x=>x.remove())}
 
@@ -680,11 +770,12 @@ const th=S.get('st-theme',null);if(th)document.documentElement.dataset.theme=th;
 new IntersectionObserver(es=>{if(es[0].isIntersecting&&!$('#browse').hidden&&shown<list.length)more()},{rootMargin:'800px'}).observe($('#sen'));
 addEventListener('hashchange',route);
 addEventListener('resize',chipArrows);
+i18nStatic();$('#lang').onclick=()=>setLang(LANG==='en'?'vi':'en');
 fpanel();
 fetch('videos.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{
   V=d;V.forEach((v,i)=>{v._i=i;v._s=fold([v.t,v.ht,v.c,v.a,v.b,v.at,v.bt].join(' '))});
   SH=shortsPool();buildTopics();chips();counts();route();
-}).catch(()=>{$('#grid').innerHTML='<div class="empty"><strong>Không tải được thư viện video</strong>Tải lại trang để thử lần nữa.</div>'});
+}).catch(()=>{$('#grid').innerHTML=`<div class="empty"><strong>${tr('Không tải được thư viện video')}</strong>${tr('Tải lại trang để thử lần nữa.')}</div>`});
 })();
 </script>
 
