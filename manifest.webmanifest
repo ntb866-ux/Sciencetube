@@ -1,0 +1,24 @@
+{
+  "name": "Sciencetube",
+  "short_name": "Sciencetube",
+  "description": "Video khoa học ngắn cho học sinh THCS và THPT, theo lớp và chủ đề.",
+  "lang": "vi",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#0f6b5a",
+  "categories": ["education", "kids"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Shorts", "url": "./#shorts", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Nổi bật", "url": "./#uu-tien", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
