@@ -204,6 +204,13 @@ main{flex:1;min-width:0;padding-left:max(16px,env(safe-area-inset-left,0px));pad
 .shlink button{height:36px;padding:0 16px;border-radius:18px;background:var(--accent);color:var(--accent-ink);font-weight:600;font-size:14px}
 #toast{position:fixed;left:16px;bottom:16px;z-index:110;background:#0f0f0f;color:#fff;padding:12px 18px;border-radius:8px;font-size:14px;max-width:calc(100vw - 32px);opacity:0;transform:translateY(12px);transition:.2s;pointer-events:none}#toast.on{opacity:1;transform:none}
 @media (max-width:560px){.shmodal{place-items:end stretch;padding:0}.shbox{border-radius:16px 16px 0 0;width:100%}}
+/* captions on: keep the caption safe zone clear */
+body.cc .sover{padding-top:28px;padding-bottom:10px;background:linear-gradient(transparent,rgba(0,0,0,.5));transition:opacity .4s .3s}
+body.cc .sover .svi,body.cc .sover .stags{display:none}
+body.cc .sover .sti{-webkit-line-clamp:1;font-size:14px;margin:0}
+body.cc .sover .sch{margin-bottom:4px}
+body.cc .sitem.on .sover{opacity:0}
+body.cc .sitem.on .sstage:hover .sover,body.cc .sitem.on .sover:hover{opacity:1;transition-delay:0s}
 /* ---------- shorts shelf (home) ---------- */
 .shelf{margin:0 0 36px}
 .shelf-h{display:flex;align-items:center;gap:8px;margin:4px 0 14px}
@@ -509,7 +516,17 @@ function shelf(show){
 }
 
 /* YouTube IFrame API: try to start with sound; if the browser blocks it, start muted and offer "Bật tiếng" */
-let ytP=null,soundOn=S.get('st-sound',true);
+let ytP=null,soundOn=S.get('st-sound',true),ccOn=S.get('st-cc',false);
+/* Captions: YouTube draws them inside its own frame, so we cannot move them. We make them bigger
+   (scaled to the player width) and, while they are on, shrink the Shorts info overlay into a thin strip that fades away,
+   so the bottom of the video (where captions sit) stays clear. */
+function ccSize(el){const w=el.clientWidth;return w<360?1:w<520?2:3}
+function applyCC(p,el){try{if(ccOn){p.loadModule('captions');p.setOption('captions','fontSize',ccSize(el))}else{p.unloadModule('captions')}}catch(e){}}
+function setCC(on){ccOn=on;S.set('st-cc',on);document.body.classList.toggle('cc',on);
+  $$('[data-act="cc"]').forEach(b=>b.setAttribute('aria-pressed',on));
+  $$('[data-stage],#wplayer').forEach(el=>{if(el._yt)applyCC(el._yt,el)});
+  toast(on?'Đã bật phụ đề (nếu video có phụ đề)':'Đã tắt phụ đề')}
+document.body.classList.toggle('cc',ccOn);
 function ytApi(){if(ytP)return ytP;ytP=new Promise(res=>{if(window.YT&&YT.Player)return res();window.onYouTubeIframeAPIReady=()=>res();const t=document.createElement('script');t.src='https://www.youtube.com/iframe_api';document.head.appendChild(t)});return ytP}
 function unmountPlayer(el){if(!el)return;if(el._yt){try{el._yt.destroy()}catch(e){}el._yt=null}el.querySelectorAll('.ytmount,.sound').forEach(x=>x.parentNode.removeChild(x))}
 function soundBtn(el,pl){
@@ -524,12 +541,13 @@ function mountPlayer(el,v,loop){
   const d=document.createElement('div');d.className='ytmount';el.prepend(d);
   ytApi().then(()=>{
     if(!d.isConnected)return;
-    const pv={autoplay:1,playsinline:1,rel:0,modestbranding:1};
+    const pv={autoplay:1,playsinline:1,rel:0,modestbranding:1,cc_lang_pref:'vi',hl:'vi'};if(ccOn)pv.cc_load_policy=1;
     if(loop){pv.loop=1;pv.playlist=v.id}
     const pl=new YT.Player(d,{host:'https://www.youtube-nocookie.com',videoId:v.id,playerVars:pv,
       events:{
-        onReady:e=>{const p=e.target;if(!soundOn){p.mute();soundBtn(el,p)}p.playVideo();
+        onReady:e=>{const p=e.target;if(ccOn)applyCC(p,el);if(!soundOn){p.mute();soundBtn(el,p)}p.playVideo();
           setTimeout(()=>{if(el._yt!==p)return;const s=p.getPlayerState();if(s!==1&&s!==3){p.mute();p.playVideo();soundBtn(el,p)}},1500)},
+        onApiChange:e=>{if(ccOn)try{e.target.setOption('captions','fontSize',ccSize(el))}catch(x){}},
         onStateChange:e=>{if(e.data===1&&!e.target.isMuted()){const b=el.querySelector('.sound');if(b)b.parentNode.removeChild(b)}}
       }});
     el._yt=pl;
@@ -561,6 +579,7 @@ function shItem(v,k){
     <div class="sover"><div class="sch">${av(v.c)}<span>${esc(v.c)}</span></div><p class="sti">${esc(v.t)}</p><p class="svi">${esc(v.ht)}</p><div class="stags">${t.join('')}</div></div></div>
    <div class="sacts">
     <button class="sact" data-act="why" aria-pressed="${shPanel}"><span class="c"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.3 2.4c-.6.2-.9.7-.9 1.3v.5M12 16.8v.2"/></svg></span>Vì sao?</button>
+    <button class="sact" data-act="cc" aria-pressed="${ccOn}"><span class="c"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10.5 10.2a2.2 2.2 0 1 0 0 3.6M16.5 10.2a2.2 2.2 0 1 0 0 3.6"/></svg></span>Phụ đề</button>
     <button class="sact" data-act="later" aria-pressed="${later.has(v.id)}"><span class="c"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span>Xem sau</button>
     <button class="sact" data-act="share"><span class="c"><svg viewBox="0 0 24 24"><path d="M14 5l7 7-7 7M21 12H9a6 6 0 0 0-6 6"/></svg></span><span data-lbl>Chia sẻ</span></button>
     <a class="sact" href="${yt(v)}" target="_blank" rel="noopener"><span class="c"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span>YouTube</a>
@@ -585,6 +604,7 @@ function shActivate(k){
   const items=$$('.sitem');
   if(shCur>=0&&items[shCur]){const st0=items[shCur].querySelector('[data-stage]');unmountPlayer(st0);st0.querySelector('[data-play]').hidden=false}
   shCur=k;const v=shOrder[k];
+  items.forEach((x,i)=>x.classList.toggle('on',i===k));
   const stg=items[k].querySelector('[data-stage]');
   stg.querySelector('[data-play]').hidden=true;
   mountPlayer(stg,v,true);
@@ -604,6 +624,7 @@ document.addEventListener('click',e=>{
   const a=e.target.closest('[data-act]');if(!a)return;
   const act=a.dataset.act;
   if(act==='why'){shPanel=!shPanel;$$('.sitem').forEach(x=>{const p=x.querySelector('[data-panel]');if(p)p.remove();x.querySelector('[data-act="why"]').setAttribute('aria-pressed',shPanel);if(shPanel)x.insertAdjacentHTML('beforeend',shPanelHTML(shOrder[+x.dataset.k]))})}
+  if(act==='cc'){setCC(!ccOn)}
   if(act==='later'){later.has(v.id)?later.delete(v.id):later.add(v.id);S.set('st-later',[...later]);a.setAttribute('aria-pressed',later.has(v.id));counts()}
   if(act==='share'){openShare(v)}
 });
