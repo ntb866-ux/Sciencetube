@@ -3,7 +3,7 @@
    - Fonts: cached after first use.
    - Thumbnails: cached after first use, capped so the cache stays small.
    - YouTube players are never cached (they need the network anyway). */
-const VER = 'st-v1';
+const VER = 'st-v2';
 const CORE = ['./', './index.html', './videos.json', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/icon.svg'];
 const IMG_MAX = 400;
 
