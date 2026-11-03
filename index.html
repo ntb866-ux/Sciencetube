@@ -85,7 +85,7 @@ body.rail-mini .rail{display:none} body.rail-mini .mini{display:block}
 @media (max-width:792px){ .mini{display:none!important} }
 /* drawer (narrow screens, and always on the watch page) */
 body.drawer .rail{display:block!important;position:fixed;left:0;top:0;bottom:0;height:100vh;height:100dvh;z-index:70;background:var(--bg);padding-top:calc(8px + env(safe-area-inset-top,0px));box-shadow:0 0 40px rgba(0,0,0,.25)}
-.dscrim{position:fixed;inset:0;background:var(--overlay);z-index:69}
+.dscrim{position:fixed;inset:0;background:var(--overlay);z-index:199}
 .drawer-head{display:none;align-items:center;gap:4px;height:48px;margin-bottom:4px}
 body.drawer .drawer-head{display:flex}
 body.watching .rail,body.watching .mini{display:none}
@@ -325,7 +325,7 @@ body.shorting:not(.drawer) .mini{display:block}
     <button class="ri" data-v="da-xem"><svg class="i" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.5"/><path d="M4 4v4.5h4.5M12 8v4l2.8 1.8"/></svg>Đã xem<span class="n" data-c="seen"></span></button>
     <hr>
     <h3>Môn học</h3>
-    <button class="ri" data-v="khtn"><span class="subj">K</span>Khoa học tự nhiên · THCS<span class="n" data-c="khtn"></span></button>
+    <button class="ri" data-v="khtn"><span class="subj">K</span>Khoa học tự nhiên<span class="n" data-c="khtn"></span></button>
     <button class="ri" data-v="vat-li"><span class="subj">L</span>Vật lí · THPT<span class="n" data-c="vl"></span></button>
     <button class="ri" data-v="hoa-hoc"><span class="subj">H</span>Hoá học · THPT<span class="n" data-c="hh"></span></button>
     <button class="ri" data-v="sinh-hoc"><span class="subj">S</span>Sinh học · THPT<span class="n" data-c="sh"></span></button>
@@ -647,8 +647,8 @@ function route(){
   render();window.scrollTo(0,0);
 }
 function go(v){if(location.hash.slice(1)===v)route();else location.hash=v}
-function openDrawer(){document.body.classList.add('drawer');const s=document.createElement('div');s.className='dscrim';s.onclick=closeDrawer;document.body.appendChild(s)}
-function closeDrawer(){document.body.classList.remove('drawer');$$('.dscrim').forEach(x=>x.remove())}
+function openDrawer(){document.body.classList.add('drawer');const rl=$('#rail');rl.style.setProperty('display','block','important');rl.style.setProperty('z-index','200','important');const s=document.createElement('div');s.className='dscrim';s.onclick=closeDrawer;document.body.appendChild(s)}
+function closeDrawer(){document.body.classList.remove('drawer');const rl=$('#rail');rl.style.removeProperty('display');rl.style.removeProperty('z-index');$$('.dscrim').forEach(x=>x.remove())}
 
 $('#menu').onclick=()=>{
   const narrow=matchMedia('(max-width:792px)').matches;
