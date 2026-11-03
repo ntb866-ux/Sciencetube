@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Thư viện video khoa học ngắn dưới 5 phút cho học sinh THCS và THPT, gắn với yêu cầu cần đạt chương trình GDPT 2018.">
+<meta name="description" content="Thư viện video khoa học ngắn dưới 5 phút cho học sinh THCS và THPT, theo từng lớp và chủ đề kiến thức.">
 <meta property="og:title" content="Sciencetube">
-<meta property="og:description" content="Video khoa học ngắn cho THCS và THPT, gắn với YCCĐ GDPT 2018.">
+<meta property="og:description" content="Video khoa học ngắn cho học sinh THCS và THPT, theo lớp và chủ đề.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f6b5a'/%3E%3Cpath d='M12 6h8M13 6v8l-6 11a2 2 0 0 0 2 3h14a2 2 0 0 0 2-3l-6-11V6' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}</style>
 <title>Sciencetube</title>
@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
 <style>
 /* Layout: video-site shell (top bar, collapsible rail, chip row, card grid, watch page with related column).
-   Identity: a university-press reading room. Source Serif 4 for titles and descriptions, Be Vietnam Pro for UI, mono for YCCĐ codes. */
+   Identity: a university-press reading room. Source Serif 4 for titles and descriptions, Be Vietnam Pro for UI, mono for durations. */
 :root{
   --bg:#ffffff; --bg2:#f3f4f2; --bg3:#e6e8e5; --fg:#121614; --muted:#5f6763; --line:#e3e6e3;
   --accent:#0f6b5a; --accent-ink:#ffffff; --accent-soft:#e1efea; --lab:#a4510c; --hover:rgba(18,22,20,.06);
@@ -171,7 +171,7 @@ main{flex:1;min-width:0;padding-left:max(16px,env(safe-area-inset-left,0px));pad
 .yc{display:grid;gap:10px}
 .ycr{display:grid;gap:3px;padding-left:12px;border-left:3px solid var(--accent)}
 .ycr .lvl{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.ycr .code{font-family:var(--f-mono);font-size:12.5px;color:var(--accent)}
+.ych{font-size:13px;font-weight:600;color:var(--muted);margin:14px 0 8px}
 .ycr .tp{font-family:var(--f-title);font-weight:600;font-size:15px}
 .ycr p{margin:0;font-family:var(--f-title);font-size:16px;line-height:1.5;max-width:70ch}
 .facts{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13.5px;color:var(--muted)}
@@ -308,7 +308,7 @@ body.shorting:not(.drawer) .mini{display:block}
   <nav class="mini" aria-label="Danh mục thu gọn">
     <button class="mi" data-v="trang-chu"><svg class="i" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20h-5v-6H9v6H4Z"/></svg>Trang chủ</button>
     <button class="mi" data-v="shorts"><svg class="i" viewBox="0 0 24 24"><path d="M14.5 3.2 7.6 7a4 4 0 0 0 0 7l1.1.6-1.1.6a4 4 0 0 0 3.9 7l6.9-3.8a4 4 0 0 0 0-7l-1.1-.6 1.1-.6a4 4 0 0 0-3.9-7Z"/><path d="m10.5 9.5 4 2.5-4 2.5Z" fill="currentColor" stroke="none"/></svg>Shorts</button>
-    <button class="mi" data-v="uu-tien"><svg class="i" viewBox="0 0 24 24"><path d="m12 3.5 2.5 5.3 5.8.7-4.3 4 1.1 5.8L12 16.4l-5.1 2.9L8 13.5l-4.3-4 5.8-.7Z"/></svg>Ưu tiên</button>
+    <button class="mi" data-v="uu-tien"><svg class="i" viewBox="0 0 24 24"><path d="m12 3.5 2.5 5.3 5.8.7-4.3 4 1.1 5.8L12 16.4l-5.1 2.9L8 13.5l-4.3-4 5.8-.7Z"/></svg>Nổi bật</button>
     <button class="mi" data-v="thi-nghiem"><svg class="i" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6L5 18a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 18l-5-9V3M7.5 14h9"/></svg>Thí nghiệm</button>
     <button class="mi" data-v="xem-sau"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Xem sau</button>
     <button class="mi" data-v="da-xem"><svg class="i" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.5"/><path d="M4 4v4.5h4.5M12 8v4l2.8 1.8"/></svg>Đã xem</button>
@@ -317,7 +317,7 @@ body.shorting:not(.drawer) .mini{display:block}
     <div class="drawer-head"><button class="ib" data-close-drawer aria-label="Đóng danh mục"><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button><a class="logo" href="#trang-chu"><span class="mark"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6L5 18a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 18l-5-9V3"/></svg></span><span class="word">Science<i>tube</i></span></a></div>
     <button class="ri" data-v="trang-chu"><svg class="i" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20h-5v-6H9v6H4Z"/></svg>Trang chủ<span class="n" data-c="all"></span></button>
     <button class="ri" data-v="shorts"><svg class="i" viewBox="0 0 24 24"><path d="M14.5 3.2 7.6 7a4 4 0 0 0 0 7l1.1.6-1.1.6a4 4 0 0 0 3.9 7l6.9-3.8a4 4 0 0 0 0-7l-1.1-.6 1.1-.6a4 4 0 0 0-3.9-7Z"/><path d="m10.5 9.5 4 2.5-4 2.5Z" fill="currentColor" stroke="none"/></svg>Shorts<span class="n" data-c="shorts"></span></button>
-    <button class="ri" data-v="uu-tien"><svg class="i" viewBox="0 0 24 24"><path d="m12 3.5 2.5 5.3 5.8.7-4.3 4 1.1 5.8L12 16.4l-5.1 2.9L8 13.5l-4.3-4 5.8-.7Z"/></svg>Ưu tiên<span class="n" data-c="pr"></span></button>
+    <button class="ri" data-v="uu-tien"><svg class="i" viewBox="0 0 24 24"><path d="m12 3.5 2.5 5.3 5.8.7-4.3 4 1.1 5.8L12 16.4l-5.1 2.9L8 13.5l-4.3-4 5.8-.7Z"/></svg>Nổi bật<span class="n" data-c="pr"></span></button>
     <button class="ri" data-v="thi-nghiem"><svg class="i" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6L5 18a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 18l-5-9V3M7.5 14h9"/></svg>Thí nghiệm thật<span class="n" data-c="tn"></span></button>
     <hr>
     <h3>Của bạn</h3>
@@ -325,7 +325,7 @@ body.shorting:not(.drawer) .mini{display:block}
     <button class="ri" data-v="da-xem"><svg class="i" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.5"/><path d="M4 4v4.5h4.5M12 8v4l2.8 1.8"/></svg>Đã xem<span class="n" data-c="seen"></span></button>
     <hr>
     <h3>Môn học</h3>
-    <button class="ri" data-v="khtn"><span class="subj">K</span>KHTN · THCS<span class="n" data-c="khtn"></span></button>
+    <button class="ri" data-v="khtn"><span class="subj">K</span>Khoa học tự nhiên · THCS<span class="n" data-c="khtn"></span></button>
     <button class="ri" data-v="vat-li"><span class="subj">L</span>Vật lí · THPT<span class="n" data-c="vl"></span></button>
     <button class="ri" data-v="hoa-hoc"><span class="subj">H</span>Hoá học · THPT<span class="n" data-c="hh"></span></button>
     <button class="ri" data-v="sinh-hoc"><span class="subj">S</span>Sinh học · THPT<span class="n" data-c="sh"></span></button>
@@ -358,10 +358,10 @@ const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
 let V=[],list=[],shown=0;const PAGE=36;
 const st={view:'trang-chu',chip:'all',dk:0,sort:'pr',dur:0,q:''};
 const VIEW={
- 'trang-chu':['Trang chủ',()=>true],'shorts':['Shorts',v=>v.sh],'uu-tien':['Ưu tiên',v=>v.pr],'thi-nghiem':['Thí nghiệm thật',v=>v.tn],
+ 'trang-chu':['Trang chủ',()=>true],'shorts':['Shorts',v=>v.sh],'uu-tien':['Nổi bật',v=>v.pr],'thi-nghiem':['Thí nghiệm thật',v=>v.tn],
  'xem-sau':['Xem sau',v=>later.has(v.id)],'da-xem':['Đã xem',v=>seen.has(v.id)],
- 'khtn':['KHTN · THCS',v=>!!v.a],'vat-li':['Vật lí · THPT',v=>v.bm==='Vật lí'],'hoa-hoc':['Hoá học · THPT',v=>v.bm==='Hoá học'],'sinh-hoc':['Sinh học · THPT',v=>v.bm==='Sinh học']};
-const DK={1:'Xem là hiểu',2:'Cần GV giải thích',3:'Vượt chương trình'};
+ 'khtn':['Khoa học tự nhiên · THCS',v=>!!v.a],'vat-li':['Vật lí · THPT',v=>v.bm==='Vật lí'],'hoa-hoc':['Hoá học · THPT',v=>v.bm==='Hoá học'],'sinh-hoc':['Sinh học · THPT',v=>v.bm==='Sinh học']};
+const DK={1:'Giới thiệu',2:'Tìm hiểu',3:'Vận dụng'};
 const AVC=['#0f6b5a','#7a4a12','#2f4f86','#7b2d4a','#4d5d16','#5a3f86','#8a3b1d','#1f5f73'];
 const dur=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
 const views=n=>n>=1e9?(n/1e9).toFixed(1).replace('.',',')+' tỉ':n>=1e6?(n/1e6).toFixed(1).replace('.',',')+' Tr':n>=1e3?Math.round(n/1e3)+' N':String(n);
@@ -385,7 +385,7 @@ function chips(){
 }
 function fpanel(){
   const grp=(h,key,opts)=>`<div><h4>${h}</h4>${opts.map(([val,l])=>`<button class="fopt" data-f="${key}" data-val="${val}" aria-pressed="${st[key]==val}">${l}</button>`).join('')}</div>`;
-  $('#fp').innerHTML=grp('Độ khó','dk',[[0,'Mọi mức'],[1,'1 · Xem là hiểu'],[2,'2 · Cần GV giải thích'],[3,'3 · Vượt chương trình']])+
+  $('#fp').innerHTML=grp('Mức độ','dk',[[0,'Mọi mức'],[1,'Giới thiệu'],[2,'Tìm hiểu'],[3,'Vận dụng']])+
     grp('Thời lượng','dur',[[0,'Mọi thời lượng'],[1,'Dưới 1 phút'],[2,'1–3 phút'],[3,'3–5 phút']])+
     grp('Sắp xếp theo','sort',[['pr','Đề xuất'],['views','Lượt xem'],['short','Ngắn nhất'],['new','Ngày tải lên']]);
 }
@@ -423,10 +423,10 @@ function related(v){
   const out=[],seenIds=new Set([v.id]);
   const add=(arr,why)=>{for(const x of arr){if(out.length>=20)return;if(seenIds.has(x.id))continue;seenIds.add(x.id);out.push([x,why])}};
   const by=(fn)=>V.filter(fn).sort((a,b)=>(b.pr-a.pr)||(b.v-a.v));
-  if(v.a)add(by(x=>x.a===v.a),v.a);
-  if(v.b)add(by(x=>x.b===v.b),v.b);
-  if(v.at)add(by(x=>x.at===v.at),'Cùng chủ đề');
-  if(v.bt)add(by(x=>x.bt===v.bt),'Cùng chủ đề');
+  if(v.a)add(by(x=>x.a===v.a),v.at);
+  if(v.b)add(by(x=>x.b===v.b),v.bt);
+  if(v.at)add(by(x=>x.at===v.at),v.at);
+  if(v.bt)add(by(x=>x.bt===v.bt),v.bt);
   add(by(x=>x.g.some(g=>v.g.includes(g))&&x.tn===v.tn),'Cùng lớp');
   return out;
 }
@@ -434,8 +434,8 @@ function watch(i){
   const v=V[i];if(!v)return go('trang-chu');
   document.body.classList.add('watching');$('#browse').hidden=true;
   const yc=[];
-  if(v.a)yc.push(`<div class="ycr"><span class="lvl">THCS · KHTN lớp ${esc(v.al)}</span><span class="code">${esc(v.a)}</span><span class="tp">${esc(v.at)}</span><p>${esc(v.ay.replace(/^[–-]\s*/,''))}</p></div>`);
-  if(v.b)yc.push(`<div class="ycr"><span class="lvl">THPT · ${esc(v.bm)} lớp ${esc(v.bl)}</span><span class="code">${esc(v.b)}</span><span class="tp">${esc(v.bt)}</span><p>${esc(v.by.replace(/^[–-]\s*/,''))}</p></div>`);
+  if(v.a)yc.push(`<div class="ycr"><span class="lvl">Lớp ${esc(v.al)} · Khoa học tự nhiên</span><span class="tp">${esc(v.at)}</span></div>`);
+  if(v.b)yc.push(`<div class="ycr"><span class="lvl">Lớp ${esc(v.bl)} · ${esc(v.bm)}</span><span class="tp">${esc(v.bt)}</span></div>`);
   const rel=related(v).map(([x,why])=>`<article class="rcard"><a class="thumb" href="#v-${x._i}" style="${bg(x)}" aria-label="${esc(x.t)}">${img(x)}<span class="dur">${dur(x.d)}</span>${seen.has(x.id)?'<span class="seenbar"></span>':''}</a><div class="info"><a class="ti" href="#v-${x._i}">${esc(x.t)}</a><span class="ch">${esc(x.c)}</span><span class="st">${views(x.v)} lượt xem</span><span class="rwhy">${esc(why)}</span></div></article>`).join('');
   $('#watch').innerHTML=`<div style="min-width:0">
     <div class="player" id="wplayer"></div>
@@ -444,12 +444,11 @@ function watch(i){
     <div class="owner"><div class="who">${av(v.c)}<div><b>${esc(v.c)}</b><small>${views(v.v)} lượt xem${v.p?' · '+v.p:''}</small></div></div>
       <div class="acts"><a class="pill" href="${yt(v)}" target="_blank" rel="noopener" data-watch><svg class="i" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>Mở trên YouTube</a><button class="pill" id="lat"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span>${later.has(v.id)?'Đã lưu Xem sau':'Xem sau'}</span></button><button class="pill" id="wshare"><svg class="i" viewBox="0 0 24 24"><path d="M14 5l7 7-7 7M21 12H9a6 6 0 0 0-6 6"/></svg>Chia sẻ</button></div></div>
     <div class="desc">
-      <div class="facts"><span>Thời lượng <b>${dur(v.d)}</b></span><span>Độ khó <b>${v.dk?v.dk+' · '+DK[v.dk]:'—'}</b></span><span>Thí nghiệm thật <b>${v.tn?'Có':'Không'}</b></span>${v.g.length?`<span>Phù hợp <b>lớp ${v.g.join(', ')}</b></span>`:''}</div>
-      ${yc.length?`<div class="yc">${yc.join('')}</div>`:''}
-      ${(v.auto||!v.tc)?`<p class="warn">${v.auto?'Nhãn được gắn tự động theo tiêu đề, chưa có giáo viên kiểm tra.':'Mô tả gốc của video ít thông tin, nhãn có độ tin cậy thấp.'}</p>`:''}
+      <div class="facts"><span>Thời lượng <b>${dur(v.d)}</b></span><span>Mức độ <b>${v.dk?DK[v.dk]:'—'}</b></span><span>Thí nghiệm thật <b>${v.tn?'Có':'Không'}</b></span>${v.g.length?`<span>Phù hợp <b>lớp ${v.g.join(', ')}</b></span>`:''}</div>
+      ${yc.length?`<h4 class="ych">Kiến thức liên quan</h4><div class="yc">${yc.join('')}</div>`:''}
     </div>
   </div>
-  <aside class="related" aria-label="Video liên quan"><h2>Cùng yêu cầu cần đạt</h2>${rel||'<p class="st">Chưa có video liên quan.</p>'}</aside>`;
+  <aside class="related" aria-label="Video liên quan"><h2>Video cùng chủ đề</h2>${rel||'<p class="st">Chưa có video liên quan.</p>'}</aside>`;
   $('#watch').hidden=false;window.scrollTo(0,0);mountPlayer($('#wplayer'),v,false);seen.add(v.id);S.set('st-seen',[...seen]);counts();
   $('#watch').onclick=e=>{
     if(e.target.closest('[data-watch]')){seen.add(v.id);S.set('st-seen',[...seen]);counts()}
@@ -590,14 +589,14 @@ function shItem(v,k){
 }
 function shPanelHTML(v){
   const yc=[];
-  if(v.a)yc.push(`<div class="ycr"><span class="lvl">THCS · KHTN lớp ${esc(v.al)}</span><span class="code">${esc(v.a)}</span><span class="tp">${esc(v.at)}</span><p>${esc(v.ay.replace(/^[–-]\s*/,''))}</p></div>`);
-  if(v.b)yc.push(`<div class="ycr"><span class="lvl">THPT · ${esc(v.bm)} lớp ${esc(v.bl)}</span><span class="code">${esc(v.b)}</span><span class="tp">${esc(v.bt)}</span><p>${esc(v.by.replace(/^[–-]\s*/,''))}</p></div>`);
+  if(v.a)yc.push(`<div class="ycr"><span class="lvl">Lớp ${esc(v.al)} · Khoa học tự nhiên</span><span class="tp">${esc(v.at)}</span></div>`);
+  if(v.b)yc.push(`<div class="ycr"><span class="lvl">Lớp ${esc(v.bl)} · ${esc(v.bm)}</span><span class="tp">${esc(v.bt)}</span></div>`);
   return `<aside class="spanel" data-panel><header><h3>Vì sao?</h3><button class="ib" data-act="why" aria-label="Đóng"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
    <div class="body"><p class="q">${esc(v.ht)}</p>
-   <div class="facts"><span>Độ khó <b>${v.dk?v.dk+' · '+DK[v.dk]:'—'}</b></span><span>Thời lượng <b>${dur(v.d)}</b></span></div>
-   ${yc.length?`<div class="yc">${yc.join('')}</div>`:''}
-   <p class="st" style="white-space:normal">Gợi ý: cho học sinh xem một lần không tiếng, đoán hiện tượng, rồi xem lại và đối chiếu với yêu cầu cần đạt ở trên.</p>
-   ${(v.auto||!v.tc)?`<p class="warn">${v.auto?'Nhãn được gắn tự động theo tiêu đề, chưa có giáo viên kiểm tra.':'Mô tả gốc ít thông tin, nhãn có độ tin cậy thấp.'}</p>`:''}</div></aside>`;
+   <div class="facts"><span>Mức độ <b>${v.dk?DK[v.dk]:'—'}</b></span><span>Thời lượng <b>${dur(v.d)}</b></span></div>
+   ${yc.length?`<h4 class="ych">Kiến thức liên quan</h4><div class="yc">${yc.join('')}</div>`:''}
+   <p class="st" style="white-space:normal">Thử thách: xem một lần không bật tiếng, đoán xem chuyện gì đang xảy ra và vì sao. Sau đó xem lại để kiểm tra dự đoán của bạn.</p>
+   </div></aside>`;
 }
 function shActivate(k){
   if(k===shCur||!shOrder[k])return;
