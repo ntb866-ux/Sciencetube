@@ -801,10 +801,12 @@ addEventListener('keydown',e=>{if($('#share')&&e.key==='Escape'){e.stopImmediate
 const vimg=v=>`<img src="https://i.ytimg.com/vi/${v.id}/oar2.jpg" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${v.id}/hqdefault.jpg'">`;
 let SH=[],shOrder=[],shCur=-1,shPanel=false,shIO=null,shelfN=6;
 function shortsPool(){return V.filter(v=>v.sh).sort((a,b)=>(b.tn-a.tn)||(b.pr-a.pr)||(b.v-a.v))}
+/* Shorts not yet seen on this device come first (channels mixed); ones already seen go to the end */
+function shortsOrder(L){return [...spread(L.filter(v=>!seen.has(v.id))),...L.filter(v=>seen.has(v.id))]}
 function shelf(show){
   const el=$('#shelf');
   if(!show){el.innerHTML='';return}
-  const pool=SH.filter(pass);
+  const pool=shortsOrder(SH.filter(pass));
   if(!pool.length){el.innerHTML='';return}
   const n=pool.slice(0,shelfN);
   el.innerHTML=`<section class="shelf" aria-label="Shorts"><div class="shelf-h"><span class="logo-s"><svg viewBox="0 0 24 24"><path d="m9 7 9 5-9 5Z"/></svg></span><h2>Shorts</h2></div>
@@ -857,7 +859,7 @@ function shortsOpen(startIdx){
   document.body.classList.add('shorting');document.body.classList.remove('watching');
   $('#browse').hidden=true;$('#watch').hidden=true;$('#watch').innerHTML='';
   $$('[data-v]').forEach(b=>b.setAttribute('aria-current',b.dataset.v==='shorts'));
-  const pool=SH.filter(pass);
+  const pool=shortsOrder(SH.filter(pass));
   shOrder=pool.slice();
   if(startIdx!=null){const s=V[startIdx];if(s&&s.sh){shOrder=[s,...pool.filter(x=>x!==s)]}}
   const el=$('#shorts');el.hidden=false;
