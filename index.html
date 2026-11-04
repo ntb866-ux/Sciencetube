@@ -241,6 +241,7 @@ body.cc .sitem.on .sstage:hover .sover,body.cc .sitem.on .sover:hover{opacity:1;
 .shelf-row.fy-row{grid-auto-columns:minmax(240px,1fr);gap:16px}
 @media (min-width:1100px){.shelf-row.fy-row{grid-auto-columns:calc((100% - 3*16px)/4)}}
 .fyreset{margin-left:auto;background:none;border:1px solid var(--line);border-radius:16px;height:32px;padding:0 14px;font-size:13px;color:var(--muted);font-family:var(--f-ui)}
+.gq{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}.gq .chip{background:var(--bg);border:1px solid var(--line)}.gq .fyreset{margin-left:0;height:32px}.gradeq{padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--bg2)}.gradeq .shelf-h{margin:0 0 6px}.gradeq .st{margin:0;white-space:normal}
 .fyreset:hover{background:var(--hover);color:var(--fg)}
 .shelf-more{display:flex;justify-content:center;margin-top:14px;border-top:1px solid var(--line)}
 .shelf-more button{margin-top:-18px;background:var(--bg);border:1px solid var(--line);border-radius:18px;height:36px;padding:0 18px;font-weight:600}
@@ -402,7 +403,8 @@ const EN={
  'Không tải được thư viện video':'Could not load the video library','Tải lại trang để thử lần nữa.':'Reload the page to try again.',
  'Kết quả cho':'Results for','Dành cho bạn':'For you','Chủ đề mới':'New topic','Phần tiếp theo':'Next part','Vì bạn hay xem':'Because you watch',
  'Cùng chủ đề, khó hơn một chút':'Same topic, a step harder','Gần với video này':'Close to this video','Xoá lịch sử gợi ý':'Clear recommendation history',
- 'Đã xoá lịch sử gợi ý':'Recommendation history cleared','Bản khác của video này':'Other versions of this video',
+ 'Đã xoá lịch sử gợi ý':'Recommendation history cleared','Bạn đang học lớp mấy?':'Which grade are you in?','Bỏ qua':'Skip','Hợp với lớp':'Suits grade',
+ 'Sciencetube sẽ gợi ý video hợp với lớp của bạn. Câu trả lời chỉ lưu trên máy này.':'Sciencetube will suggest videos that suit your grade. Your answer stays on this device.','Bản khác của video này':'Other versions of this video',
  'Xoá lịch sử gợi ý trên máy này? Danh sách Đã xem và Xem sau vẫn giữ nguyên.':'Clear recommendation history on this device? Your History and Watch later lists stay as they are.','Cài ứng dụng':'Install app',
  'Trên iPhone/iPad: mở bằng Safari, bấm nút Chia sẻ rồi chọn “Thêm vào MH chính”.':'On iPhone/iPad: open in Safari, tap Share, then “Add to Home Screen”.','Ngôn ngữ':'Language'
 };
@@ -618,7 +620,14 @@ function buildRec(){
   sc.forEach((m,k)=>TSUB.set(k,Object.entries(m).sort((a,b)=>b[1]-a[1])[0][0]));
 }
 function seenRecently(){const t=now(),s=new Set();Object.entries(R.w).forEach(([id,e])=>{if(t-e[0]<HIDE*DAY)s.add(id)});return s}
-function hasProfile(){return Object.keys(R.w).length>0}
+function hasProfile(){return Object.keys(R.w).length>0||!!R.grade}
+/* first visit: "Bạn đang học lớp mấy?" seeds the profile with the most-watched topics of that grade */
+function setGrade(g){
+  R.ga=1;
+  if(g){R.grade=g;const t=now(),c=new Map();V.forEach(v=>{if(!v.sh&&v.g.includes(g))tops(v).forEach(k=>c.set(k,(c.get(k)||0)+Math.log10(v.v+10)))});
+    [...c.entries()].filter(([k])=>(TV.get(k)||[]).length>=5).sort((a,b)=>b[1]-a[1]).slice(0,4).forEach(([k])=>{R.arm[k]=[.5,0,t];R.t[k]=[.5,t]})}
+  saveR();render();
+}
 /* ctx = video being watched (or null on the home page); ok = extra filter (home filters) */
 function recommend(ctx,n,ok){
   const ws=seenRecently(),t=now();
@@ -647,12 +656,13 @@ function recommend(ctx,n,ok){
     const s=ctx?sim(ctx,v):0;
     if(!inF&&!inE&&s<.35)return;
     if(!elig(v))return;
-    if(inE){const k=vt.find(k=>expS.has(k));E.push({v,r:.5*q(v)+.3*(v.dk===1?1:v.dk===2?.5:0)+.2*th(k),why:`${tr('Chủ đề mới')}: ${tname(k)}`,x:1});return}
+    if(inE){const k=vt.find(k=>expS.has(k));E.push({v,r:.5*q(v)+.3*(v.dk===1?1:v.dk===2?.5:0)+.2*th(k)+(R.grade&&v.g.includes(R.grade)?.1:0),why:`${tr('Chủ đề mới')}: ${tname(k)}`,x:1});return}
     const up=vt.some(k=>LN[k]>=2&&v.dk===LV[k]+1);
-    const r=(ctx?.5*s+.35*pm(v):.85*pm(v))+.15*q(v)+(up?.08:0);
+    const gb=R.grade&&v.g.includes(R.grade)?.1:0;
+    const r=(ctx?.5*s+.35*pm(v):.85*pm(v))+.15*q(v)+(up?.08:0)+gb;
     let why;
     if(ctx&&s>=.35){const sh=vt.find(k=>ctxT.includes(k));why=up?tr('Cùng chủ đề, khó hơn một chút'):sh?tname(sh):tr('Gần với video này')}
-    else{const k=vt.slice().sort((x,y)=>tscore(y)-tscore(x))[0];why=up?tr('Cùng chủ đề, khó hơn một chút'):k?`${tr('Vì bạn hay xem')} ${tname(k)}`:tr('Dành cho bạn')}
+    else{const k=vt.slice().sort((x,y)=>tscore(y)-tscore(x))[0];why=up?tr('Cùng chủ đề, khó hơn một chút'):!Object.keys(R.w).length&&R.grade?`${tr('Hợp với lớp')} ${R.grade}`:k?`${tr('Vì bạn hay xem')} ${tname(k)}`:tr('Dành cho bạn')}
     A.push({v,r,why,x:0});
   });
   A.sort((a,b)=>b.r-a.r);E.sort((a,b)=>b.r-a.r);
@@ -701,6 +711,12 @@ function spread(L){
 }
 function forYou(show){
   const el=$('#fy');if(!el)return;
+  if(show&&!hasProfile()&&!R.ga){
+    el.innerHTML=`<section class="shelf gradeq" aria-label="${tr('Bạn đang học lớp mấy?')}"><div class="shelf-h"><h2>${tr('Bạn đang học lớp mấy?')}</h2></div>
+     <p class="st">${tr('Sciencetube sẽ gợi ý video hợp với lớp của bạn. Câu trả lời chỉ lưu trên máy này.')}</p>
+     <div class="gq">${[6,7,8,9,10,11,12].map(g=>`<button class="chip" data-grade="${g}">${tr('Lớp')} ${g}</button>`).join('')}<button class="fyreset" data-grade="0">${tr('Bỏ qua')}</button></div></section>`;
+    el.querySelectorAll('[data-grade]').forEach(b=>b.onclick=()=>setGrade(+b.dataset.grade));
+    return}
   if(!show||!hasProfile()){el.innerHTML='';return}
   const rs=recommend(null,10,pass);
   if(!rs.length){el.innerHTML='';return}
