@@ -648,7 +648,7 @@ function recommend(ctx,n,ok){
     const c=CL.get(v._i);if(c){if(c[0]!==v)return false;if(c.some(x=>x===ctx||ws.has(x.id)))return false}
     return true;
   };
-  const q=v=>(v.pr?.35:0)+(v.tn?.2:0)+Math.min(.45,Math.log10(v.v+1)/8*.45);
+  const q=v=>(v.pr?.35:0)+(v.tn?.2:0)+Math.min(.45,Math.log10(v.v+1)/8*.45)-(v.lo?.3:0);
   const pm=v=>{let s=0;vtags(v).forEach(k=>{const x=tscore(k);if(x>0)s+=TW(k)*x});return 1-Math.exp(-s/1.5)};
   const famS=new Set(fam),expS=new Set(exp),A=[],E=[];
   V.forEach(v=>{
