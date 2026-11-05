@@ -348,6 +348,7 @@ body.shorting:not(.drawer) .mini{display:block}
     <button class="ri" data-v="vat-li"><span class="subj">L</span>Vật lí<span class="n" data-c="vl"></span></button>
     <button class="ri" data-v="hoa-hoc"><span class="subj">H</span>Hoá học<span class="n" data-c="hh"></span></button>
     <button class="ri" data-v="sinh-hoc"><span class="subj">S</span>Sinh học<span class="n" data-c="sh"></span></button>
+    <button class="ri" data-v="dia-chat"><span class="subj">Đ</span>Địa chất học<span class="n" data-c="dc"></span></button>
     <div id="installWrap" hidden><hr><button class="ri" id="install" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 19h14"/></svg>Cài ứng dụng</button></div>
   </nav>
 
@@ -383,7 +384,7 @@ const EN={
  'Danh mục':'Menu','Sciencetube, trang chủ':'Sciencetube home','Tìm kiếm':'Search','Tìm':'Search','Đổi giao diện sáng/tối':'Toggle light/dark theme',
  'Danh mục thu gọn':'Compact menu','Trang chủ':'Home','Nổi bật':'Featured','Thí nghiệm':'Experiment','Thí nghiệm thật':'Real experiments',
  'Xem sau':'Watch later','Đã xem':'History','Đóng danh mục':'Close menu','Của bạn':'You','Môn học':'Subjects',
- 'Khoa học tự nhiên':'Natural Science','Vật lí':'Physics','Hoá học':'Chemistry','Sinh học':'Biology',
+ 'Khoa học tự nhiên':'Natural Science','Vật lí':'Physics','Hoá học':'Chemistry','Sinh học':'Biology','Địa chất học':'Geology',
  'Cuộn trái':'Scroll left','Cuộn phải':'Scroll right','Chủ đề':'Topics','Bộ lọc':'Filters',
  'Đang tải thư viện video':'Loading the video library','Khoảng 2.500 video, chỉ mất vài giây.':'About 2,500 videos, it only takes a few seconds.',
  'Tất cả':'All','Mức độ':'Level','Mọi mức':'Any level','Giới thiệu':'Introduction','Tìm hiểu':'Explore','Vận dụng':'Apply',
@@ -473,7 +474,7 @@ const st={view:'trang-chu',chip:'all',dk:0,sort:'pr',dur:0,q:''};
 const VIEW={
  'trang-chu':['Trang chủ',()=>true],'shorts':['Shorts',v=>v.sh],'uu-tien':['Nổi bật',v=>v.pr],'thi-nghiem':['Thí nghiệm thật',v=>v.tn],
  'xem-sau':['Xem sau',v=>later.has(v.id)],'da-xem':['Đã xem',v=>seen.has(v.id)],
- 'khtn':['Khoa học tự nhiên',v=>!!v.a],'vat-li':['Vật lí',v=>v.bm==='Vật lí'],'hoa-hoc':['Hoá học',v=>v.bm==='Hoá học'],'sinh-hoc':['Sinh học',v=>v.bm==='Sinh học']};
+ 'khtn':['Khoa học tự nhiên',v=>!!v.a],'vat-li':['Vật lí',v=>v.bm==='Vật lí'],'hoa-hoc':['Hoá học',v=>v.bm==='Hoá học'],'sinh-hoc':['Sinh học',v=>v.bm==='Sinh học'],'dia-chat':['Địa chất học',v=>v.bm==='Địa chất học']};
 const DK={1:tr('Giới thiệu'),2:tr('Tìm hiểu'),3:tr('Vận dụng')};
 Object.values(VIEW).forEach(x=>x[0]=tr(x[0]));
 const AVC=['#0f6b5a','#7a4a12','#2f4f86','#7b2d4a','#4d5d16','#5a3f86','#8a3b1d','#1f5f73'];
@@ -731,6 +732,7 @@ function watch(i){
   const yc=[];
   if(v.a)yc.push(`<div class="ycr"><span class="lvl">${tr('Lớp')} ${esc(v.al)} · ${tr('Khoa học tự nhiên')}</span><span class="tp">${esc(trT(v.at))}</span></div>`);
   if(v.b)yc.push(`<div class="ycr"><span class="lvl">${tr('Lớp')} ${esc(v.bl)} · ${esc(tr(v.bm))}</span><span class="tp">${esc(trT(v.bt))}</span></div>`);
+  if(!v.a&&!v.b&&v.bm)yc.push(`<div class="ycr"><span class="lvl">${esc(tr(v.bm))}</span><span class="tp">${esc(trT(v.bt))}</span></div>`);
   const rl=recommend(v,20).map(o=>[o.v,o.why,o.x]),have=new Set(rl.map(r=>r[0].id));
   related(v).forEach(([x,why])=>{if(rl.length<20&&!have.has(x.id)&&!x.sh){have.add(x.id);rl.push([x,why,0])}});
   const alt=(CL.get(v._i)||[]).filter(x=>x!==v);
@@ -756,8 +758,8 @@ function watch(i){
   };
 }
 function counts(){
-  const c={all:V.length,pr:0,tn:0,khtn:0,vl:0,hh:0,sh:0,shorts:0,later:later.size,seen:seen.size};
-  V.forEach(v=>{v.sh&&c.shorts++;v.pr&&c.pr++;v.tn&&c.tn++;v.a&&c.khtn++;v.bm==='Vật lí'&&c.vl++;v.bm==='Hoá học'&&c.hh++;v.bm==='Sinh học'&&c.sh++});
+  const c={all:V.length,pr:0,tn:0,khtn:0,vl:0,hh:0,sh:0,dc:0,shorts:0,later:later.size,seen:seen.size};
+  V.forEach(v=>{v.sh&&c.shorts++;v.pr&&c.pr++;v.tn&&c.tn++;v.a&&c.khtn++;v.bm==='Vật lí'&&c.vl++;v.bm==='Hoá học'&&c.hh++;v.bm==='Sinh học'&&c.sh++;v.bm==='Địa chất học'&&c.dc++});
   $$('[data-c]').forEach(e=>e.textContent=(c[e.dataset.c]||0).toLocaleString(LOC));
 }
 
@@ -890,6 +892,7 @@ function shPanelHTML(v){
   const yc=[];
   if(v.a)yc.push(`<div class="ycr"><span class="lvl">${tr('Lớp')} ${esc(v.al)} · ${tr('Khoa học tự nhiên')}</span><span class="tp">${esc(trT(v.at))}</span></div>`);
   if(v.b)yc.push(`<div class="ycr"><span class="lvl">${tr('Lớp')} ${esc(v.bl)} · ${esc(tr(v.bm))}</span><span class="tp">${esc(trT(v.bt))}</span></div>`);
+  if(!v.a&&!v.b&&v.bm)yc.push(`<div class="ycr"><span class="lvl">${esc(tr(v.bm))}</span><span class="tp">${esc(trT(v.bt))}</span></div>`);
   return `<aside class="spanel" data-panel><header><h3>${tr('Vì sao?')}</h3><button class="ib" data-act="why" aria-label="${tr('Đóng')}"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
    <div class="body"><p class="q">${esc(LANG==='en'?v.t:v.ht)}</p>
    <div class="facts"><span>${tr('Mức độ')} <b>${v.dk?DK[v.dk]:'—'}</b></span><span>${tr('Thời lượng')} <b>${dur(v.d)}</b></span></div>
