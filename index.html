@@ -4,18 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Thư viện video khoa học ngắn dưới 5 phút cho học sinh THCS và THPT, theo từng lớp và chủ đề kiến thức.">
-<meta property="og:title" content="Sciencetube">
+<meta property="og:title" content="Nerdscroll">
 <meta property="og:description" content="Video khoa học ngắn cho học sinh THCS và THPT, theo lớp và chủ đề.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f6b5a'/%3E%3Cpath d='M12 6h8M13 6v8l-6 11a2 2 0 0 0 2 3h14a2 2 0 0 0 2-3l-6-11V6' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}</style>
-<title>Sciencetube</title>
+<title>Nerdscroll</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#faf9f5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#262624" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Sciencetube">
+<meta name="apple-mobile-web-app-title" content="Nerdscroll">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,10 +58,7 @@ svg.i{width:24px;height:24px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .ib{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none}
 .ib:hover{background:var(--hover)}
 .logo{display:flex;align-items:center;gap:6px;padding:0 6px 0 10px;height:40px}
-.mark{width:28px;height:20px;border-radius:6px;background:var(--accent);display:grid;place-items:center}
-.mark svg{width:14px;height:14px;stroke:var(--accent-ink);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.word{font-family:var(--f-title);font-weight:700;font-size:20px;letter-spacing:-.02em;line-height:1}
-.word i{font-style:italic;font-weight:400;color:var(--accent)}
+.nlogo{display:block;height:28px;width:102px;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .vn{font-size:10px;color:var(--muted);align-self:flex-start;margin-top:8px;letter-spacing:.04em}
 .center{flex:0 1 728px;display:flex;align-items:center;gap:12px;min-width:0}
 .search{flex:1;display:flex;min-width:0;height:40px}
@@ -106,7 +104,7 @@ main{flex:1;min-width:0;padding-left:max(16px,env(safe-area-inset-left,0px));pad
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:none;height:32px;padding:0 12px;border-radius:8px;background:var(--bg2);font-size:14px;font-weight:500;white-space:nowrap}
 .chip:hover{background:var(--bg3)}
-.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .chip.lab[aria-pressed="true"]{background:var(--lab);color:#fff}
 .chipnav{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none}
 .chipnav:hover{background:var(--hover)}
@@ -173,7 +171,7 @@ main{flex:1;min-width:0;padding-left:max(16px,env(safe-area-inset-left,0px));pad
 .pill{height:36px;padding:0 16px;border-radius:18px;background:var(--bg2);display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:14px}
 .pill:hover{background:var(--bg3)}
 .pill svg{width:20px;height:20px}
-.pill.primary{background:var(--fg);color:var(--bg)}
+.pill.primary{background:var(--accent);color:var(--accent-ink)}
 .pill.primary:hover{opacity:.88}
 .desc{background:var(--bg2);border-radius:12px;padding:12px 14px;margin-top:12px;display:grid;gap:12px}
 .desc .st{color:var(--fg);font-weight:600;white-space:normal}
@@ -312,7 +310,7 @@ body.shorting:not(.drawer) .mini{display:block}
 <header class="top">
   <div class="start">
     <button class="ib" id="menu" aria-label="Danh mục"><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
-    <a class="logo" href="#trang-chu" aria-label="Sciencetube, trang chủ"><span class="mark"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6L5 18a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 18l-5-9V3"/></svg></span><span class="word">Science<i>tube</i></span><span class="vn">VN</span></a>
+    <a class="logo" href="#trang-chu" aria-label="Nerdscroll, trang chủ"><svg class="nlogo" viewBox="0 22 334.35 92" aria-hidden="true" focusable="false"><path d="M17.25,65.25V94.75M17.25,80A14.75,14.75 0 0 1 46.75,80V94.75 M64.25,80H93.75A14.75,14.75 0 1 0 89.96,89.87 M111.25,65.25V94.75M111.25,80A14.75,14.75 0 0 1 126,65.25 M173,80A14.75,14.75 0 1 0 143.5,80A14.75,14.75 0 1 0 173,80M173,41.25V94.75" style="stroke:var(--accent)" stroke-width="10.5"/><path d="M206.58,66.23A9.8,8.75 0 1 0 198.55,80A9.8,8.75 0 1 1 190.52,93.77" style="stroke:var(--fg)" stroke-width="5"/><path d="M247.8,69.69A16.75,16.75 0 1 0 246.65,91.64" style="stroke:var(--accent)" stroke-width="6"/><path d="M298.35,80A16.75,16.75 0 1 0 264.85,80A16.75,16.75 0 1 0 298.35,80" style="stroke:var(--accent)" stroke-width="6"/><path d="M246.65,91.64A16.75,16.75 0 0 0 247.8,69.69" style="stroke:var(--lab)" stroke-width="6"/><path d="M247.8,69.69C257.86,64.11 264.54,67.37 268.4,69.69" style="stroke:var(--lab)" stroke-width="6"/><path d="M307.85,38.5V97.5" style="stroke:var(--fg)" stroke-width="5"/><path d="M319.85,38.5V97.5" style="stroke:var(--fg)" stroke-width="5"/></svg><span class="vn">VN</span></a>
   </div>
   <div class="center">
     <form class="search" id="sf" role="search"><input id="q" type="search" placeholder="Search" autocomplete="off" aria-label="Tìm kiếm"><button aria-label="Tìm"><svg class="i" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg></button></form>
@@ -333,7 +331,7 @@ body.shorting:not(.drawer) .mini{display:block}
     <button class="mi" data-v="da-xem"><svg class="i" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.5"/><path d="M4 4v4.5h4.5M12 8v4l2.8 1.8"/></svg>Đã xem</button>
   </nav>
   <nav class="rail" id="rail" aria-label="Danh mục">
-    <div class="drawer-head"><button class="ib" data-close-drawer aria-label="Đóng danh mục"><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button><a class="logo" href="#trang-chu"><span class="mark"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6L5 18a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 18l-5-9V3"/></svg></span><span class="word">Science<i>tube</i></span></a></div>
+    <div class="drawer-head"><button class="ib" data-close-drawer aria-label="Đóng danh mục"><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button><a class="logo" href="#trang-chu"><svg class="nlogo" viewBox="0 22 334.35 92" aria-hidden="true" focusable="false"><path d="M17.25,65.25V94.75M17.25,80A14.75,14.75 0 0 1 46.75,80V94.75 M64.25,80H93.75A14.75,14.75 0 1 0 89.96,89.87 M111.25,65.25V94.75M111.25,80A14.75,14.75 0 0 1 126,65.25 M173,80A14.75,14.75 0 1 0 143.5,80A14.75,14.75 0 1 0 173,80M173,41.25V94.75" style="stroke:var(--accent)" stroke-width="10.5"/><path d="M206.58,66.23A9.8,8.75 0 1 0 198.55,80A9.8,8.75 0 1 1 190.52,93.77" style="stroke:var(--fg)" stroke-width="5"/><path d="M247.8,69.69A16.75,16.75 0 1 0 246.65,91.64" style="stroke:var(--accent)" stroke-width="6"/><path d="M298.35,80A16.75,16.75 0 1 0 264.85,80A16.75,16.75 0 1 0 298.35,80" style="stroke:var(--accent)" stroke-width="6"/><path d="M246.65,91.64A16.75,16.75 0 0 0 247.8,69.69" style="stroke:var(--lab)" stroke-width="6"/><path d="M247.8,69.69C257.86,64.11 264.54,67.37 268.4,69.69" style="stroke:var(--lab)" stroke-width="6"/><path d="M307.85,38.5V97.5" style="stroke:var(--fg)" stroke-width="5"/><path d="M319.85,38.5V97.5" style="stroke:var(--fg)" stroke-width="5"/></svg></a></div>
     <button class="ri" data-v="trang-chu"><svg class="i" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20h-5v-6H9v6H4Z"/></svg>Trang chủ<span class="n" data-c="all"></span></button>
     <button class="ri" data-v="shorts"><svg class="i" viewBox="0 0 24 24"><path d="M14.5 3.2 7.6 7a4 4 0 0 0 0 7l1.1.6-1.1.6a4 4 0 0 0 3.9 7l6.9-3.8a4 4 0 0 0 0-7l-1.1-.6 1.1-.6a4 4 0 0 0-3.9-7Z"/><path d="m10.5 9.5 4 2.5-4 2.5Z" fill="currentColor" stroke="none"/></svg>Shorts<span class="n" data-c="shorts"></span></button>
     <button class="ri" data-v="uu-tien"><svg class="i" viewBox="0 0 24 24"><path d="m12 3.5 2.5 5.3 5.8.7-4.3 4 1.1 5.8L12 16.4l-5.1 2.9L8 13.5l-4.3-4 5.8-.7Z"/></svg>Nổi bật<span class="n" data-c="pr"></span></button>
@@ -381,7 +379,7 @@ let V=[],list=[],shown=0;const PAGE=36;
 /* ---------- language: Vietnamese (default) / English ---------- */
 const LANG=(()=>{try{const q=new URLSearchParams(location.search).get('lang');if(q==='en'||q==='vi'){localStorage.setItem('st-lang',JSON.stringify(q));return q}}catch(e){}return S.get('st-lang','vi')==='en'?'en':'vi'})();
 const EN={
- 'Danh mục':'Menu','Sciencetube, trang chủ':'Sciencetube home','Tìm kiếm':'Search','Tìm':'Search','Đổi giao diện sáng/tối':'Toggle light/dark theme',
+ 'Danh mục':'Menu','Nerdscroll, trang chủ':'Nerdscroll home','Tìm kiếm':'Search','Tìm':'Search','Đổi giao diện sáng/tối':'Toggle light/dark theme',
  'Danh mục thu gọn':'Compact menu','Trang chủ':'Home','Nổi bật':'Featured','Thí nghiệm':'Experiment','Thí nghiệm thật':'Real experiments',
  'Xem sau':'Watch later','Đã xem':'History','Đóng danh mục':'Close menu','Của bạn':'You','Môn học':'Subjects',
  'Khoa học tự nhiên':'Natural Science','Vật lí':'Physics','Hoá học':'Chemistry','Sinh học':'Biology','Địa chất học':'Geology',
@@ -405,7 +403,7 @@ const EN={
  'Kết quả cho':'Results for','Dành cho bạn':'For you','Chủ đề mới':'New topic','Phần tiếp theo':'Next part','Vì bạn hay xem':'Because you watch',
  'Cùng chủ đề, khó hơn một chút':'Same topic, a step harder','Gần với video này':'Close to this video','Xoá lịch sử gợi ý':'Clear recommendation history',
  'Đã xoá lịch sử gợi ý':'Recommendation history cleared','Bạn đang học lớp mấy?':'Which grade are you in?','Bỏ qua':'Skip','Hợp với lớp':'Suits grade',
- 'Sciencetube sẽ gợi ý video hợp với lớp của bạn. Câu trả lời chỉ lưu trên máy này.':'Sciencetube will suggest videos that suit your grade. Your answer stays on this device.','Bản khác của video này':'Other versions of this video',
+ 'Nerdscroll sẽ gợi ý video hợp với lớp của bạn. Câu trả lời chỉ lưu trên máy này.':'Nerdscroll will suggest videos that suit your grade. Your answer stays on this device.','Bản khác của video này':'Other versions of this video',
  'Xoá lịch sử gợi ý trên máy này? Danh sách Đã xem và Xem sau vẫn giữ nguyên.':'Clear recommendation history on this device? Your History and Watch later lists stay as they are.','Cài ứng dụng':'Install app',
  'Trên iPhone/iPad: mở bằng Safari, bấm nút Chia sẻ rồi chọn “Thêm vào MH chính”.':'On iPhone/iPad: open in Safari, tap Share, then “Add to Home Screen”.','Ngôn ngữ':'Language'
 };
@@ -456,7 +454,7 @@ function i18nStatic(){
   document.querySelectorAll('.vn').forEach(e=>e.textContent=LANG==='en'?'EN':'VN');
   document.querySelectorAll('#lang b').forEach(e=>e.textContent=LANG==='en'?'EN':'VI');
   if(LANG!=='en')return;
-  document.title='Sciencetube';
+  document.title='Nerdscroll';
   const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement.closest('script,style')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
   const ns=[];while(w.nextNode())ns.push(w.currentNode);
   ns.forEach(n=>{const t=n.nodeValue.trim();if(!t)return;const e=EN_STATIC[t]??EN[t];if(e)n.nodeValue=n.nodeValue.replace(t,e)});
@@ -714,7 +712,7 @@ function forYou(show){
   const el=$('#fy');if(!el)return;
   if(show&&!hasProfile()&&!R.ga){
     el.innerHTML=`<section class="shelf gradeq" aria-label="${tr('Bạn đang học lớp mấy?')}"><div class="shelf-h"><h2>${tr('Bạn đang học lớp mấy?')}</h2></div>
-     <p class="st">${tr('Sciencetube sẽ gợi ý video hợp với lớp của bạn. Câu trả lời chỉ lưu trên máy này.')}</p>
+     <p class="st">${tr('Nerdscroll sẽ gợi ý video hợp với lớp của bạn. Câu trả lời chỉ lưu trên máy này.')}</p>
      <div class="gq">${[6,7,8,9,10,11,12].map(g=>`<button class="chip" data-grade="${g}">${tr('Lớp')} ${g}</button>`).join('')}<button class="fyreset" data-grade="0">${tr('Bỏ qua')}</button></div></section>`;
     el.querySelectorAll('[data-grade]').forEach(b=>b.onclick=()=>setGrade(+b.dataset.grade));
     return}
@@ -794,7 +792,7 @@ function openShare(v){
       if(isMobile)location.href='fb-messenger://share/?link='+eu;
       else copyText(u).then(()=>{toast(tr('Đã chép link. Dán vào cuộc trò chuyện Messenger.'));window.open('https://www.messenger.com/','_blank','noopener')},()=>window.open('https://www.messenger.com/','_blank','noopener'));
     }
-    else if(k==='more')navigator.share({title:v.t,text:v.t+' · Sciencetube',url:u}).catch(()=>{});
+    else if(k==='more')navigator.share({title:v.t,text:v.t+' · Nerdscroll',url:u}).catch(()=>{});
     else if(k==='cp')copyText(u).then(()=>{toast(tr('Đã chép link'));closeShare()},()=>{m.querySelector('input').select();toast(tr('Hãy bấm giữ để chép link'))});
   });
 }
