@@ -1,10 +1,10 @@
-/* Sciencetube service worker.
+/* Nerdscroll service worker.
    - The site itself (page, video list, icons): network first, so every update shows up at once; the cached copy is used offline.
    - Fonts: cached after first use.
    - Thumbnails: cached after first use, capped so the cache stays small.
    - YouTube players are never cached (they need the network anyway). */
-const VER = 'st-v2';
-const CORE = ['./', './index.html', './videos.json', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/icon.svg'];
+const VER = 'st-v3';
+const CORE = ['./', './index.html', './videos.json', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/icon.svg', './icons/favicon-32.png'];
 const IMG_MAX = 400;
 
 self.addEventListener('install', e => {
