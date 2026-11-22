@@ -149,7 +149,7 @@ main{flex:1;min-width:0;padding-left:max(16px,env(safe-area-inset-left,0px));pad
 .sentinel{height:1px}
 
 /* ---------- watch page ---------- */
-.watch{display:grid;grid-template-columns:minmax(0,1fr) 402px;gap:24px;max-width:1754px;margin:0 auto;padding-top:24px}
+.watch{display:grid;grid-template-columns:minmax(0,1fr) clamp(402px,calc(402px + (100vw - 1400px)*.52),648px);gap:24px;max-width:1754px;margin:0 auto;padding-top:24px}
 @media (max-width:1016px){.watch{grid-template-columns:minmax(0,1fr)}}
 .player{position:relative;width:100%;max-width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background-color:var(--thumb);background-size:1000% 600%;background-repeat:no-repeat}
 .thumb img,.player iframe{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border:0}
@@ -184,15 +184,17 @@ main{flex:1;min-width:0;padding-left:max(16px,env(safe-area-inset-left,0px));pad
 .facts{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13.5px;color:var(--muted)}
 .facts b{color:var(--fg);font-weight:600}
 .warn{font-size:13px;background:var(--bg);border-radius:8px;padding:8px 10px;margin:0;color:var(--muted);border:1px dashed var(--line)}
-.related{display:flex;flex-direction:column;gap:8px;min-width:0}
-.related h2{font-family:var(--f-title);font-size:19px;font-weight:500;margin:0 0 4px}
-.rcard{display:grid;grid-template-columns:168px minmax(0,1fr);gap:8px;min-width:0}
-.rcard .thumb{border-radius:8px}
-.rcard .dur{right:4px;bottom:4px;font-size:11px}
-.rcard .ti{font-size:14px;-webkit-line-clamp:2}
-.rcard .ch,.rcard .st{font-size:12px}
-.rwhy{font-size:12px;color:var(--accent);font-family:var(--f-ui);font-weight:600}
-.rwhy{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.related{display:flex;flex-direction:column;gap:8px;min-width:0;container-type:inline-size}
+.rchips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.rchips::-webkit-scrollbar{display:none}
+.rcard{display:grid;grid-template-columns:clamp(168px,calc(100cqw - 234px),413px) minmax(0,1fr);gap:12px;min-width:0}
+.rcard .thumb{border-radius:12px}
+.rcard .dur{right:4px;bottom:4px;font-family:var(--f-ui);font-size:12px;font-weight:500;line-height:18px;padding:0 4px}
+.rcard .info{gap:0;padding-right:0}
+.rcard .ti{font-family:var(--f-ui);font-size:14px;font-weight:500;line-height:20px;margin:0 0 4px;-webkit-line-clamp:2}
+.rcard .ch,.rcard .st{font-size:12px;line-height:18px}
+.rcard .new{position:absolute;left:8px;top:8px;background:var(--bg);color:var(--fg);font-size:12px;font-weight:500;line-height:18px;padding:0 6px;border-radius:4px}
+.rwhy{font-size:12px;color:var(--accent);font-family:var(--f-ui);font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .rwhy.new{color:var(--lab)}
 .card .rwhy{margin-top:2px}
 .alts{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14px}.alts a{color:var(--fg);text-decoration:underline;text-underline-offset:2px}
@@ -391,7 +393,7 @@ const EN={
  'Danh sách Xem sau đang trống':'Your Watch later list is empty','Bạn chưa mở video nào':'You have not opened any videos yet','Không có video khớp bộ lọc':'No videos match these filters',
  'Mở một video và bấm “Xem sau” để lưu vào đây.':'Open a video and press “Watch later” to save it here.','Thử chọn “Tất cả” hoặc bỏ bớt bộ lọc.':'Try “All” or remove some filters.',
  'Lớp':'Grade','lượt xem':'views','Cùng lớp':'Same grade','Mở trên YouTube':'Open on YouTube','Đã lưu Xem sau':'Saved to Watch later','Chia sẻ':'Share',
- 'Có':'Yes','Không':'No','Phù hợp':'Suits','lớp':'grade','Kiến thức liên quan':'Related topics','Video liên quan':'Related videos',
+ 'Có':'Yes','Không':'No','Phù hợp':'Suits','lớp':'grade','Kiến thức liên quan':'Related topics','Video liên quan':'Related videos','Tất cả':'All','Cùng lớp':'Same grade','Của':'From','Mới':'New',
  'Video cùng chủ đề':'Videos on the same topic','Chưa có video liên quan.':'No related videos yet.',
  'Zalo, khác…':'More…','Sao chép':'Copy','Đường link':'Link','Đóng':'Close','Đã chép link':'Link copied',
  'Đã chép link. Dán vào cuộc trò chuyện Messenger.':'Link copied. Paste it into a Messenger chat.','Hãy bấm giữ để chép link':'Press and hold to copy the link',
@@ -734,7 +736,9 @@ function watch(i){
   const rl=recommend(v,20).map(o=>[o.v,o.why,o.x]),have=new Set(rl.map(r=>r[0].id));
   related(v).forEach(([x,why])=>{if(rl.length<20&&!have.has(x.id)&&!x.sh){have.add(x.id);rl.push([x,why,0])}});
   const alt=(CL.get(v._i)||[]).filter(x=>x!==v);
-  const rel=rl.map(([x,why,ex])=>`<article class="rcard"><a class="thumb" href="#v-${x._i}" style="${bg(x)}" aria-label="${esc(x.t)}">${img(x)}<span class="dur">${dur(x.d)}</span>${seen.has(x.id)?'<span class="seenbar"></span>':''}</a><div class="info"><a class="ti" href="#v-${x._i}">${esc(x.t)}</a><span class="ch">${esc(x.c)}</span><span class="st">${views(x.v)} ${tr('lượt xem')}</span><span class="rwhy${ex?' new':''}">${esc(why)}</span></div></article>`).join('');
+  const relHTML=list=>list.map(([x,why,ex])=>`<article class="rcard"><a class="thumb" href="#v-${x._i}" style="${bg(x)}" aria-label="${esc(x.t)}">${img(x)}${ex?`<span class="new">${tr('Mới')}</span>`:''}<span class="dur">${dur(x.d)}</span>${seen.has(x.id)?'<span class="seenbar"></span>':''}</a><div class="info"><a class="ti" href="#v-${x._i}">${esc(x.t)}</a><span class="ch">${esc(x.c)}</span><span class="st">${views(x.v)} ${tr('lượt xem')} · ${esc(why.replace(/^Chủ đề mới:\s*/,''))}</span></div></article>`).join('')||`<p class="st">${tr('Chưa có video liên quan.')}</p>`;
+  const rfilters=[['all',tr('Tất cả'),()=>true],['grade',tr('Cùng lớp'),r=>r[0].g.some(g=>v.g.includes(g))],['chan',tr('Của')+' '+v.c,r=>r[0].c===v.c]].filter(f=>f[0]==='all'||rl.some(r=>f[2](r)));
+  const rel=relHTML(rl);
   $('#watch').innerHTML=`<div style="min-width:0">
     <div class="player" id="wplayer"></div>
     <h1 class="wtitle">${esc(v.t)}</h1>
@@ -747,10 +751,11 @@ function watch(i){
       ${alt.length?`<h4 class="ych">${tr('Bản khác của video này')}</h4><ul class="alts">${alt.map(x=>`<li><a href="#v-${x._i}">${esc(x.t)}</a> <span class="st">· ${esc(x.c)} · ${dur(x.d)}</span></li>`).join('')}</ul>`:''}
     </div>
   </div>
-  <aside class="related" aria-label="${tr('Video liên quan')}"><h2>${tr('Video cùng chủ đề')}</h2>${rel||`<p class="st">${tr('Chưa có video liên quan.')}</p>`}</aside>`;
+  <aside class="related" aria-label="${tr('Video liên quan')}">${rfilters.length>1?`<div class="rchips">${rfilters.map((f,k)=>`<button class="chip" data-rf="${k}" aria-pressed="${k===0}">${esc(f[1])}</button>`).join('')}</div>`:''}<div id="rlist" style="display:flex;flex-direction:column;gap:8px">${rel}</div></aside>`;
   $('#watch').hidden=false;window.scrollTo(0,0);mountPlayer($('#wplayer'),v,false);recOpen(v);seen.add(v.id);S.set('st-seen',[...seen]);counts();
   $('#watch').onclick=e=>{
     if(e.target.closest('[data-watch]')){seen.add(v.id);S.set('st-seen',[...seen]);counts()}
+    const rf=e.target.closest('[data-rf]');if(rf){const k=+rf.dataset.rf;$$('[data-rf]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.rf===k));$('#rlist').innerHTML=relHTML(rl.filter(rfilters[k][2]));return}
     if(e.target.closest('#wshare')){openShare(v);return}
     if(e.target.closest('#lat')){later.has(v.id)?later.delete(v.id):(later.add(v.id),signal(v,.5),saveR());S.set('st-later',[...later]);$('#lat span').textContent=tr(later.has(v.id)?'Đã lưu Xem sau':'Xem sau');counts()}
   };
